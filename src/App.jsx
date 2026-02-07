@@ -3,28 +3,27 @@ import { useState, useEffect, useRef, useCallback } from "react";
 // ─── Constants ───────────────────────────────────────────────────────
 const OUTCOMES = [
   { emoji: "🥟", label: "IOU Dumplings", chance: 50, multiplier: 0, color: "#8B7355" },
-  { emoji: "🔄", label: "Luck Recycled", chance: 24.9, multiplier: 0, color: "#9B59B6" },
+  { emoji: "🔄", label: "Luck Recycled", chance: 26.9, multiplier: 0, color: "#9B59B6" },
   { emoji: "💰", label: "Small Win", chance: 15, multiplier: 1.5, color: "#27AE60" },
   { emoji: "🐷", label: "Golden Pig", chance: 8, multiplier: 3, color: "#F39C12" },
-  { emoji: "🧧", label: "JACKPOT", chance: 2, multiplier: -1, color: "#DC143C" },
   { emoji: "🎰", label: "SUPER JACKPOT", chance: 0.1, multiplier: 88, color: "#FFD700" },
 ];
 
 const SUGGESTED_AMOUNTS = [8, 18, 28, 88, 188, 888];
 
 const PALETTE = {
-  bg: "#0D0A08",
-  card: "#1A0E0E",
-  red: "#FF1744",
-  redDark: "#D50000",
-  gold: "#FFD740",
-  goldLight: "#FFEA00",
-  goldPale: "#3D2B0F",
-  text: "#FFE0B2",
-  textMuted: "#BF8040",
-  textLight: "#7A5C3A",
-  border: "#3D1A1A",
-  cream: "#1A0F0A",
+  bg: "#FFFAF5",
+  card: "#FFFFFF",
+  red: "#DC143C",
+  redDark: "#A91030",
+  gold: "#DAA520",
+  goldLight: "#FFD700",
+  goldPale: "#F4E1C1",
+  text: "#2B2D42",
+  textMuted: "#6B7280",
+  textLight: "#9CA3AF",
+  border: "#F0E6D8",
+  cream: "#FFF8F0",
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────
@@ -37,11 +36,11 @@ function isDeathNumber(val) {
   return (s.match(/4/g) || []).length >= 2;
 }
 
-function rollOutcome(isTuesday) {
+function rollOutcome(penaltyActive) {
   const rand = Math.random() * 100;
-  const probs = isTuesday
-    ? [62.4, 24.9, 7.5, 4, 1, 0.2]
-    : [50, 24.9, 15, 8, 2, 0.1];
+  const probs = penaltyActive
+    ? [62.4, 25.9, 7.5, 4, 0.2]
+    : [50, 26.9, 15, 8, 0.1];
   let cumulative = 0;
   for (let i = 0; i < probs.length; i++) {
     cumulative += probs[i];
@@ -80,7 +79,7 @@ function FloatingElements() {
           style={{
             position: "absolute",
             fontSize: `${14 + Math.random() * 18}px`,
-            opacity: 0.12 + Math.random() * 0.1,
+            opacity: 0.08 + Math.random() * 0.06,
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
             animation: `floatY ${12 + Math.random() * 10}s ease-in-out infinite`,
@@ -101,18 +100,18 @@ function FuSymbol({ size = 48, style = {} }) {
       style={{
         width: size,
         height: size,
-        background: "linear-gradient(135deg, #FF1744 0%, #D50000 100%)",
+        background: "linear-gradient(135deg, #DC143C 0%, #A91030 100%)",
         borderRadius: 6,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         transform: "rotate(180deg)",
-        border: "2px solid #FFD740",
-        boxShadow: "0 2px 8px rgba(255,23,68,0.35)",
+        border: "2px solid #FFD700",
+        boxShadow: "0 2px 8px rgba(220,20,60,0.25)",
         ...style,
       }}
     >
-      <span style={{ fontSize: size * 0.55, color: "#FFD740", fontWeight: 800, transform: "rotate(180deg)" }}>
+      <span style={{ fontSize: size * 0.55, color: "#FFD700", fontWeight: 800, transform: "rotate(180deg)" }}>
         福
       </span>
     </div>
@@ -147,7 +146,7 @@ function PoolDisplay({ pool }) {
   return (
     <div
       style={{
-        background: "linear-gradient(135deg, #1A0F0A 0%, #2A1A0A 100%)",
+        background: "linear-gradient(135deg, #FFF8F0 0%, #FFF0E0 100%)",
         border: `1.5px solid ${PALETTE.goldPale}`,
         borderRadius: 16,
         padding: "20px 24px",
@@ -169,7 +168,7 @@ function PoolDisplay({ pool }) {
         style={{
           fontSize: 38,
           fontWeight: 800,
-          background: "linear-gradient(135deg, #FFD740, #FFEA00, #FFD740)",
+          background: "linear-gradient(135deg, #DAA520, #FFD700, #DAA520)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           letterSpacing: -1,
@@ -202,14 +201,14 @@ function ChatMessage({ message, isBot }) {
             width: 34,
             height: 34,
             borderRadius: "50%",
-            background: "linear-gradient(135deg, #FF1744, #D50000)",
+            background: "linear-gradient(135deg, #DC143C, #A91030)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginRight: 8,
             flexShrink: 0,
             fontSize: 16,
-            boxShadow: "0 2px 8px rgba(255,23,68,0.3)",
+            boxShadow: "0 2px 8px rgba(220,20,60,0.2)",
           }}
         >
           🧧
@@ -222,7 +221,7 @@ function ChatMessage({ message, isBot }) {
           borderRadius: isBot ? "4px 16px 16px 16px" : "16px 4px 16px 16px",
           background: isBot
             ? PALETTE.card
-            : "linear-gradient(135deg, #FF1744, #D50000)",
+            : "linear-gradient(135deg, #DC143C, #A91030)",
           color: isBot ? PALETTE.text : "#fff",
           fontSize: 14,
           lineHeight: 1.55,
@@ -271,21 +270,21 @@ function EnvelopeReveal({ outcome, payout, onDone }) {
             style={{
               width: 180,
               height: 240,
-              background: "linear-gradient(180deg, #FF1744 0%, #D50000 100%)",
+              background: "linear-gradient(180deg, #DC143C 0%, #A91030 100%)",
               borderRadius: 16,
               border: "3px solid #FFD700",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 20px 60px rgba(255,23,68,0.4), 0 0 40px rgba(255,215,0,0.2)",
+              boxShadow: "0 20px 60px rgba(220,20,60,0.4), 0 0 40px rgba(255,215,0,0.15)",
               animation: phase === 1 ? "envelopeShake 0.5s ease-in-out infinite" : "envelopePulse 1.5s ease-in-out infinite",
               position: "relative",
             }}
           >
             <div style={{ fontSize: 42, marginBottom: 8 }}>🧧</div>
             <div style={{ color: "#FFD700", fontSize: 28, fontWeight: 800 }}>福</div>
-            <div style={{ color: "rgba(255,215,0,0.7)", fontSize: 10, marginTop: 6, letterSpacing: 1, fontFamily: "'Press Start 2P', monospace" }}>
+            <div style={{ color: "rgba(255,215,0,0.7)", fontSize: 11, marginTop: 6, letterSpacing: 1 }}>
               {phase === 0 ? "CAISHEN DECIDES..." : "OPENING..."}
             </div>
             {/* Gold seal */}
@@ -389,7 +388,7 @@ function TabBar({ active, onChange }) {
             padding: "8px 0",
             border: "none",
             borderRadius: 8,
-            background: active === t.id ? "linear-gradient(135deg, #FF1744, #D50000)" : "transparent",
+            background: active === t.id ? "linear-gradient(135deg, #DC143C, #A91030)" : "transparent",
             color: active === t.id ? "#fff" : PALETTE.textMuted,
             fontSize: 13,
             fontWeight: 600,
@@ -425,7 +424,7 @@ function RulesPanel() {
       <div style={sectionStyle}>
         <div style={titleStyle}>🎯 How to Play</div>
         <div style={textStyle}>
-          Send a minimum of <strong>8 $MON</strong> to CáiShén. Your offering must contain the digit "8" somewhere in the amount. CáiShén will reveal your red envelope's contents with one of six possible outcomes.
+          Send a minimum of <strong>8 $MON</strong> to CáiShén. Your offering must contain the digit "8" somewhere in the amount. CáiShén will reveal your red envelope's contents with one of five possible outcomes.
         </div>
       </div>
       <div style={sectionStyle}>
@@ -437,7 +436,7 @@ function RulesPanel() {
                 {o.emoji} <strong>{o.label}</strong>
               </span>
               <span style={{ color: PALETTE.textMuted }}>
-                {o.chance}% — {o.multiplier === 0 ? "No payout" : o.multiplier === -1 ? "Entire Pool" : `${o.multiplier}x`}
+                {o.chance}% — {o.multiplier === 0 ? "No payout" : `${o.multiplier}x`}
               </span>
             </div>
           ))}
@@ -446,11 +445,11 @@ function RulesPanel() {
       <div style={sectionStyle}>
         <div style={titleStyle}>⚠️ Superstitions & Forbidden Times</div>
         <div style={textStyle}>
-          <strong>Death Numbers:</strong> Amounts with multiple 4s trigger a block — CáiShén goes offline.
+          <strong>Death Numbers:</strong> Amounts with multiple 4s — Win probabilities are halved.
           <br /><br />
-          <strong>Forbidden Days:</strong> 4th, 14th, 24th of any month — No operations.
+          <strong>Forbidden Days:</strong> 4th, 14th, 24th of any month — Win probabilities are halved.
           <br /><br />
-          <strong>Ghost Hour:</strong> 4:44 AM/PM — No transactions.
+          <strong>Ghost Hour:</strong> 4:44 AM/PM — Win probabilities are halved.
           <br /><br />
           <strong>Tuesday Penalty:</strong> All win probabilities are halved on Tuesdays.
         </div>
@@ -482,124 +481,222 @@ function ChibiCaiShen() {
         bottom: 40,
         zIndex: 10,
         animation: "chibiFloat 3s ease-in-out infinite",
-        filter: "drop-shadow(0 0 24px rgba(255,215,0,0.3))",
+        filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.12))",
         pointerEvents: "none",
       }}
     >
-      <svg width="130" height="190" viewBox="0 0 130 190" fill="none">
-        <defs>
-          <radialGradient id="caiGlow">
-            <stop offset="0%" stopColor="#FFD740" />
-            <stop offset="100%" stopColor="transparent" />
-          </radialGradient>
-          <linearGradient id="robeGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#FF1744" />
-            <stop offset="100%" stopColor="#B71C1C" />
-          </linearGradient>
-          <linearGradient id="hatGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#2C2C2C" />
-            <stop offset="100%" stopColor="#1A1A1A" />
-          </linearGradient>
-          <linearGradient id="ingotGradC" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#FFEA00" />
-            <stop offset="100%" stopColor="#FFA000" />
-          </linearGradient>
-        </defs>
+      <svg width="120" height="168" viewBox="0 0 160 224">
+        {/* === BODY (red ball, behind face) === */}
+        <ellipse cx="80" cy="168" rx="54" ry="50" fill="#C0392B" />
 
-        {/* Soft glow behind character */}
-        <circle cx="65" cy="95" r="60" fill="url(#caiGlow)" opacity="0.12" />
-
-        {/* === HAT (官帽) === */}
-        <rect x="30" y="12" width="70" height="10" rx="2" fill="url(#hatGrad)" stroke="#FFD740" strokeWidth="1.2" />
-        <rect x="42" y="3" width="46" height="13" rx="3" fill="url(#hatGrad)" stroke="#FFD740" strokeWidth="1.2" />
-        {/* Hat ornament */}
-        <circle cx="65" cy="9" r="4" fill="#FF1744" />
-        <circle cx="65" cy="9" r="2" fill="#FFEA00" />
-        {/* Hat wings */}
-        <ellipse cx="25" cy="16" rx="8" ry="3" fill="#1A1A1A" stroke="#FFD740" strokeWidth="0.8" />
-        <ellipse cx="105" cy="16" rx="8" ry="3" fill="#1A1A1A" stroke="#FFD740" strokeWidth="0.8" />
+        {/* === ARMS (small round bumps) === */}
+        <ellipse cx="22" cy="152" rx="14" ry="12" fill="#C0392B" />
+        <ellipse cx="138" cy="152" rx="14" ry="12" fill="#C0392B" />
 
         {/* === FACE === */}
-        <circle cx="65" cy="46" r="28" fill="#FFDAB9" />
-        {/* Eyebrows */}
-        <path d="M48 35 Q53 31 58 35" fill="none" stroke="#5D4037" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M72 35 Q77 31 82 35" fill="none" stroke="#5D4037" strokeWidth="1.8" strokeLinecap="round" />
-        {/* Eyes - large cute chibi style */}
-        <ellipse cx="53" cy="42" rx="4" ry="4.5" fill="#1A1A1A" />
-        <ellipse cx="77" cy="42" rx="4" ry="4.5" fill="#1A1A1A" />
-        <circle cx="54.5" cy="40.5" r="1.5" fill="#FFF" />
-        <circle cx="78.5" cy="40.5" r="1.5" fill="#FFF" />
-        <circle cx="52" cy="43.5" r="0.8" fill="#FFF" opacity="0.6" />
-        <circle cx="76" cy="43.5" r="0.8" fill="#FFF" opacity="0.6" />
-        {/* Blush */}
-        <circle cx="44" cy="49" r="5" fill="#FF8A80" opacity="0.45" />
-        <circle cx="86" cy="49" r="5" fill="#FF8A80" opacity="0.45" />
-        {/* Happy smile */}
-        <path d="M56 52 Q65 60 74 52" fill="none" stroke="#5D4037" strokeWidth="2" strokeLinecap="round" />
-        {/* Small open mouth */}
-        <ellipse cx="65" cy="54" rx="3" ry="2" fill="#C62828" />
+        <circle cx="80" cy="84" r="38" fill="#FCEBD5" />
 
-        {/* === BEARD === */}
-        <path d="M50 60 Q45 75 40 88" fill="none" stroke="#E0E0E0" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M57 63 Q55 78 52 90" fill="none" stroke="#E0E0E0" strokeWidth="2" strokeLinecap="round" />
-        <path d="M65 64 Q65 80 65 92" fill="none" stroke="#E0E0E0" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M73 63 Q75 78 78 90" fill="none" stroke="#E0E0E0" strokeWidth="2" strokeLinecap="round" />
-        <path d="M80 60 Q85 75 90 88" fill="none" stroke="#E0E0E0" strokeWidth="2.5" strokeLinecap="round" />
+        {/* === HAT === */}
+        {/* Hat top (red block) */}
+        <rect x="40" y="10" width="80" height="30" rx="4" fill="#CC3333" />
+        {/* Hat medallion with 財 */}
+        <circle cx="80" cy="17" r="11" fill="#B22222" stroke="#DAA520" strokeWidth="2" />
+        <text x="80" y="21.5" textAnchor="middle" fill="#DAA520" fontSize="11" fontWeight="bold" fontFamily="'Noto Serif SC', serif">財</text>
+        {/* Gold dots on hat top */}
+        <circle cx="50" cy="28" r="3" fill="#DAA520" />
+        <circle cx="110" cy="28" r="3" fill="#DAA520" />
+        {/* Hat brim */}
+        <rect x="28" y="38" width="104" height="16" rx="2" fill="#CC3333" />
+        {/* Gold band */}
+        <rect x="28" y="43" width="104" height="11" rx="1" fill="#DAA520" />
+        {/* Decorative dots on gold band */}
+        <circle cx="44" cy="48" r="3.5" fill="#CC3333" />
+        <circle cx="62" cy="48" r="3.5" fill="#CC3333" />
+        <circle cx="80" cy="48" r="4" fill="#2E8B57" />
+        <circle cx="98" cy="48" r="3.5" fill="#CC3333" />
+        <circle cx="116" cy="48" r="3.5" fill="#CC3333" />
 
-        {/* === BODY / ROBE === */}
-        <path d="M36 70 Q28 82 24 125 Q24 142 65 146 Q106 142 106 125 Q102 82 94 70" fill="url(#robeGrad)" stroke="#FFD740" strokeWidth="1.5" />
-        {/* Robe collar */}
-        <path d="M50 70 L65 86 L80 70" fill="none" stroke="#FFD740" strokeWidth="2" />
-        {/* Center seam */}
-        <line x1="65" y1="86" x2="65" y2="143" stroke="#FFD740" strokeWidth="1.2" opacity="0.6" />
-        {/* Robe trim */}
-        <path d="M30 125 Q65 135 100 125" fill="none" stroke="#FFD740" strokeWidth="1" opacity="0.5" />
-        {/* 福 character on belly */}
-        <rect x="51" y="98" width="28" height="28" rx="3" fill="#B71C1C" stroke="#FFD740" strokeWidth="1" />
-        <text x="65" y="119" textAnchor="middle" fill="#FFD740" fontSize="18" fontWeight="bold" fontFamily="'Noto Serif SC', serif">福</text>
+        {/* === EYES (closed happy ^_^) === */}
+        <path d="M60 80 Q66 71 72 80" fill="none" stroke="#3E2723" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M88 80 Q94 71 100 80" fill="none" stroke="#3E2723" strokeWidth="2.8" strokeLinecap="round" />
 
-        {/* === LEFT ARM (waving coin) === */}
-        <path d="M32 85 Q16 95 12 108" fill="none" stroke="#FF1744" strokeWidth="12" strokeLinecap="round" />
-        <path d="M32 85 Q16 95 12 108" fill="none" stroke="#B71C1C" strokeWidth="10" strokeLinecap="round" />
-        <g style={{ animation: "coinWave 2s ease-in-out infinite" }}>
-          <circle cx="12" cy="114" r="10" fill="#FFD740" stroke="#FFA000" strokeWidth="1.5" />
-          <circle cx="12" cy="114" r="6" fill="none" stroke="#FFA000" strokeWidth="0.8" />
-          <rect x="10" y="110" width="4" height="8" rx="1" fill="#FFA000" opacity="0.5" />
-        </g>
+        {/* === ROSY CHEEKS === */}
+        <circle cx="54" cy="90" r="8" fill="#E8A0A0" opacity="0.5" />
+        <circle cx="106" cy="90" r="8" fill="#E8A0A0" opacity="0.5" />
 
-        {/* === RIGHT ARM (holding gold ingot) === */}
-        <path d="M98 85 Q114 95 118 108" fill="none" stroke="#FF1744" strokeWidth="12" strokeLinecap="round" />
-        <path d="M98 85 Q114 95 118 108" fill="none" stroke="#B71C1C" strokeWidth="10" strokeLinecap="round" />
-        {/* Gold ingot */}
-        <path d="M105 110 Q103 115 104 118 L118 118 L132 118 Q133 115 131 110 Z" fill="url(#ingotGradC)" stroke="#FFA000" strokeWidth="1" />
-        <path d="M110 110 L114 105 L122 105 L126 110" fill="#FFEA00" stroke="#FFA000" strokeWidth="0.8" />
+        {/* === MUSTACHE === */}
+        <path d="M70 96 Q62 89 52 93" fill="none" stroke="#3E2723" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M90 96 Q98 89 108 93" fill="none" stroke="#3E2723" strokeWidth="2.2" strokeLinecap="round" />
 
-        {/* === FEET === */}
-        <ellipse cx="52" cy="149" rx="11" ry="5" fill="#1A1A1A" stroke="#333" strokeWidth="0.5" />
-        <ellipse cx="78" cy="149" rx="11" ry="5" fill="#1A1A1A" stroke="#333" strokeWidth="0.5" />
+        {/* === BEARD (dark oval) === */}
+        <ellipse cx="80" cy="104" rx="14" ry="12" fill="#4E2C17" />
 
-        {/* === SPARKLE EFFECTS === */}
-        <g>
-          <path d="M8 28 L10 22 L12 28 L10 34 Z" fill="#FFD740">
-            <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite" />
-          </path>
-          <path d="M115 24 L117 18 L119 24 L117 30 Z" fill="#FFD740">
-            <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" begin="0.7s" repeatCount="indefinite" />
-          </path>
-          <path d="M4 120 L6 114 L8 120 L6 126 Z" fill="#FFD740">
-            <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" begin="1.4s" repeatCount="indefinite" />
-          </path>
-          <path d="M122 70 L124 65 L126 70 L124 75 Z" fill="#FFEA00">
-            <animate attributeName="opacity" values="0.3;0.9;0.3" dur="1.8s" begin="0.3s" repeatCount="indefinite" />
-          </path>
-        </g>
+        {/* === GOLD SCEPTER BAR === */}
+        <rect x="34" y="132" width="92" height="9" rx="4.5" fill="#DAA520" />
+        <circle cx="80" cy="136.5" r="5.5" fill="#2E8B57" />
+
+        {/* === ROBE RING DECORATIONS === */}
+        <circle cx="60" cy="182" r="7" fill="none" stroke="#DAA520" strokeWidth="2.5" />
+        <circle cx="100" cy="182" r="7" fill="none" stroke="#DAA520" strokeWidth="2.5" />
+
+        {/* === FLOATING GOLD INGOTS === */}
+        <ellipse cx="16" cy="30" rx="10" ry="4.5" fill="#DAA520" transform="rotate(-25 16 30)">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" repeatCount="indefinite" />
+        </ellipse>
+        <ellipse cx="144" cy="30" rx="10" ry="4.5" fill="#DAA520" transform="rotate(25 144 30)">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" begin="0.8s" repeatCount="indefinite" />
+        </ellipse>
       </svg>
+    </div>
+  );
+}
+
+// ─── Welcome Gate (shows on page load) ──────────────────────────────
+function WelcomeGate({ onEnter }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 200,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: PALETTE.bg,
+        animation: "fadeIn 0.4s ease-out",
+      }}
+    >
+      <FloatingElements />
+      <div
+        style={{
+          maxWidth: 420,
+          width: "90%",
+          padding: "36px 28px",
+          textAlign: "center",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 12 }}>
+          <GoldIngot size={24} />
+          <FuSymbol size={42} />
+          <GoldIngot size={24} />
+        </div>
+        <h1
+          style={{
+            fontFamily: "'Noto Serif SC', serif",
+            fontSize: 32,
+            fontWeight: 900,
+            background: "linear-gradient(135deg, #DC143C, #A91030)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            lineHeight: 1.2,
+            marginBottom: 4,
+          }}
+        >
+          財神 Bot
+        </h1>
+        <div style={{ fontSize: 11, color: PALETTE.textMuted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 32 }}>
+          Red Envelope Roulette
+        </div>
+
+        {/* Subtitle */}
+        <div style={{ fontSize: 14, color: PALETTE.text, fontWeight: 600, marginBottom: 20 }}>
+          How would you like to participate?
+        </div>
+
+        {/* Option Cards */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {/* Human Card */}
+          <div
+            style={{
+              background: PALETTE.card,
+              border: `1.5px solid ${PALETTE.border}`,
+              borderRadius: 16,
+              padding: "24px 20px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: 32, marginBottom: 8 }}>🧑</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: PALETTE.text, marginBottom: 4 }}>
+              I'm a Human
+            </div>
+            <div style={{ fontSize: 12, color: PALETTE.textMuted, marginBottom: 16, lineHeight: 1.5 }}>
+              Play the red envelope roulette and test your luck with CáiShén
+            </div>
+            <button
+              onClick={onEnter}
+              style={{
+                padding: "12px 36px",
+                borderRadius: 24,
+                border: "none",
+                background: "linear-gradient(135deg, #DC143C, #A91030)",
+                color: "#fff",
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 4px 16px rgba(220,20,60,0.25)",
+                transition: "transform 0.15s",
+                letterSpacing: 0.3,
+              }}
+              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              🏮 Enter App
+            </button>
+          </div>
+
+          {/* AI Agent Card */}
+          <div
+            style={{
+              background: PALETTE.card,
+              border: `1.5px solid ${PALETTE.border}`,
+              borderRadius: 16,
+              padding: "24px 20px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: 32, marginBottom: 8 }}>🤖</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: PALETTE.text, marginBottom: 4 }}>
+              I'm an AI Agent
+            </div>
+            <div style={{ fontSize: 12, color: PALETTE.textMuted, marginBottom: 16, lineHeight: 1.5 }}>
+              🤖 Read the skill documentation to participate:
+            </div>
+            <a
+              href="https://skills.caishen.lol/docs"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "12px 36px",
+                borderRadius: 24,
+                border: `1.5px solid ${PALETTE.gold}`,
+                background: "linear-gradient(135deg, #FFF8F0, #FFF0E0)",
+                color: PALETTE.gold,
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: "pointer",
+                textDecoration: "none",
+                letterSpacing: 0.3,
+                transition: "transform 0.15s",
+              }}
+              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              📖 View Skill Docs
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 // ─── Main App ───────────────────────────────────────────────────────
 export default function CaishenApp() {
+  const [showGate, setShowGate] = useState(true);
   const [wallet, setWallet] = useState(null);
   const [pool, setPool] = useState(888.88);
   const [amount, setAmount] = useState("");
@@ -641,26 +738,6 @@ export default function CaishenApp() {
     // Add user message
     addMessage(`${val} MON offering${wish ? ` — "${wish}"` : ""}`, false);
 
-    // Forbidden day check
-    if (isForbiddenDay()) {
-      addMessage(`You dare approach on the ${new Date().getDate()}th? The number of death haunts this day. CáiShén does not operate today. Return on a more auspicious date.`);
-      return;
-    }
-
-    // Ghost hour
-    if (isGhostHour()) {
-      addMessage("4:44... The Ghost Hour. Even gods rest during this cursed minute. Return later.");
-      return;
-    }
-
-    // Death number
-    if (isDeathNumber(val)) {
-      addMessage("... I pretend I did not see this. *CáiShén has gone offline for 4 minutes* ☠️");
-      setAmount("");
-      setWish("");
-      return;
-    }
-
     // Below minimum
     if (val < 8) {
       addMessage(`${val} MON? The minimum offering is 8 MON. You insult me with pocket change? Return when you are serious about prosperity.`);
@@ -678,6 +755,10 @@ export default function CaishenApp() {
 
     // Valid! Process
     setIsProcessing(true);
+
+    // Check for penalty conditions (all halve win probabilities)
+    const penaltyActive = isTuesday() || isForbiddenDay() || isGhostHour() || isDeathNumber(val);
+
     const eightCount = (String(val).match(/8/g) || []).length;
     const eightComment =
       eightCount >= 4
@@ -688,11 +769,22 @@ export default function CaishenApp() {
         ? "Double 8s! Twice the luck!"
         : "The sacred 8 is present. Acceptable.";
 
-    addMessage(`${val} MON received. ${eightComment} Let us see what the universe owes you... 🧧`);
+    let penaltyWarning = "";
+    if (isForbiddenDay()) {
+      penaltyWarning = ` ⚠️ The ${new Date().getDate()}th... a day haunted by death. Win probabilities halved!`;
+    } else if (isGhostHour()) {
+      penaltyWarning = " ⚠️ 4:44... The Ghost Hour dims your fortune. Win probabilities halved!";
+    } else if (isDeathNumber(val)) {
+      penaltyWarning = " ⚠️ Multiple 4s... death numbers cloud your luck. Win probabilities halved! ☠️";
+    } else if (isTuesday()) {
+      penaltyWarning = " ⚠️ Tuesday penalty — win probabilities halved!";
+    }
+
+    addMessage(`${val} MON received. ${eightComment}${penaltyWarning} Let us see what the universe owes you... 🧧`);
 
     // Determine outcome after dramatic pause
     setTimeout(() => {
-      const outcomeIdx = rollOutcome(isTuesday());
+      const outcomeIdx = rollOutcome(penaltyActive);
       const outcome = OUTCOMES[outcomeIdx];
       let payout = 0;
 
@@ -711,10 +803,6 @@ export default function CaishenApp() {
         // Golden Pig
         payout = val * 3;
       } else if (outcomeIdx === 4) {
-        // Jackpot
-        payout = pool;
-        setPool(88.88); // Reset
-      } else if (outcomeIdx === 5) {
         // Super Jackpot
         payout = Math.min(val * 88, pool * 0.5);
         setPool((p) => p - payout);
@@ -736,7 +824,6 @@ export default function CaishenApp() {
       `Your luck has been... recycled. Added to the Celestial Pool (now ${formatMON(pool)} MON). Your sacrifice feeds future fortunes. 🔄`,
       `Minor Blessing Detected! ${formatMON(r.payout)} MON returned. The universe acknowledges you. Nothing more, nothing less. 💰`,
       `THE GOLDEN PIG APPEARS! 🐷 ${formatMON(r.payout)} MON rushing to your wallet! Your ancestors are smiling. Your enemies are confused.`,
-      `🧧🧧🧧 圣! STOP EVERYTHING! THE CELESTIAL ENVELOPE HAS CHOSEN YOU! Pool of ${formatMON(r.payout)} MON transferred! Your ancestors are WEEPING with pride! Please face Southeast and say thank you. 恭喜發財!`,
       `🎰🎰🎰 天啊! HEAVENS ABOVE! THE DOUBLE 8 FORTUNE HAS MANIFESTED! 88x DIVINE MULTIPLIER! ${formatMON(r.payout)} MON materializing! 發發發! DOUBLE PROSPERITY!`,
     ];
 
@@ -755,12 +842,13 @@ export default function CaishenApp() {
 
   return (
     <>
+      {showGate && <WelcomeGate onEnter={() => setShowGate(false)} />}
       {/* Global styles */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Noto+Serif+SC:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: ${PALETTE.bg}; font-family: 'VT323', monospace; color: ${PALETTE.text}; -webkit-font-smoothing: antialiased; }
+        body { background: ${PALETTE.bg}; font-family: 'DM Sans', sans-serif; color: ${PALETTE.text}; -webkit-font-smoothing: antialiased; }
 
         @keyframes floatY {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -795,11 +883,6 @@ export default function CaishenApp() {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-12px); }
         }
-        @keyframes coinWave {
-          0%, 100% { transform: rotate(-5deg); }
-          50% { transform: rotate(5deg); }
-        }
-
         input::placeholder, textarea::placeholder { color: ${PALETTE.textLight}; }
         input:focus, textarea:focus { outline: none; }
         ::-webkit-scrollbar { width: 4px; }
@@ -841,18 +924,17 @@ export default function CaishenApp() {
           <h1
             style={{
               fontFamily: "'Noto Serif SC', serif",
-              fontSize: 32,
+              fontSize: 28,
               fontWeight: 900,
-              background: "linear-gradient(135deg, #FF1744, #FF5252)",
+              background: "linear-gradient(135deg, #DC143C, #A91030)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               lineHeight: 1.2,
-              textShadow: "0 0 30px rgba(255,23,68,0.4)",
             }}
           >
             財神 Bot
           </h1>
-          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: PALETTE.gold, letterSpacing: 2, textTransform: "uppercase", marginTop: 6 }}>
+          <div style={{ fontSize: 11, color: PALETTE.textMuted, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>
             Red Envelope Roulette
           </div>
 
@@ -882,12 +964,12 @@ export default function CaishenApp() {
                   padding: "10px 28px",
                   borderRadius: 24,
                   border: "none",
-                  background: "linear-gradient(135deg, #FF1744, #D50000)",
+                  background: "linear-gradient(135deg, #DC143C, #A91030)",
                   color: "#fff",
                   fontSize: 14,
                   fontWeight: 600,
                   cursor: "pointer",
-                  boxShadow: "0 4px 16px rgba(255,23,68,0.35)",
+                  boxShadow: "0 4px 16px rgba(220,20,60,0.25)",
                   transition: "transform 0.15s",
                 }}
                 onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
@@ -969,7 +1051,7 @@ export default function CaishenApp() {
                     padding: "5px 12px",
                     borderRadius: 16,
                     border: `1px solid ${amount === String(a) ? PALETTE.red : PALETTE.border}`,
-                    background: amount === String(a) ? "rgba(255,23,68,0.15)" : PALETTE.cream,
+                    background: amount === String(a) ? "rgba(220,20,60,0.06)" : PALETTE.cream,
                     color: amount === String(a) ? PALETTE.red : PALETTE.textMuted,
                     fontSize: 12,
                     fontWeight: 600,
@@ -994,13 +1076,13 @@ export default function CaishenApp() {
                   width: "100%",
                   padding: "12px 80px 12px 16px",
                   borderRadius: 12,
-                  border: `1.5px solid ${amountValid === true ? PALETTE.gold : amountValid === false ? "#FF1744" : PALETTE.border}`,
+                  border: `1.5px solid ${amountValid === true ? PALETTE.gold : amountValid === false ? "#E74C3C" : PALETTE.border}`,
                   fontSize: 15,
                   fontWeight: 600,
-                  background: amountValid === true ? "rgba(255,215,0,0.1)" : PALETTE.card,
+                  background: amountValid === true ? "rgba(255,215,0,0.04)" : PALETTE.bg,
                   color: PALETTE.text,
                   transition: "border-color 0.2s, background 0.2s",
-                  fontFamily: "'VT323', monospace",
+                  fontFamily: "'DM Sans', sans-serif",
                 }}
               />
               <span
@@ -1047,7 +1129,7 @@ export default function CaishenApp() {
                 color: PALETTE.text,
                 resize: "none",
                 marginBottom: 10,
-                fontFamily: "'VT323', monospace",
+                fontFamily: "'DM Sans', sans-serif",
                 lineHeight: 1.4,
               }}
             />
@@ -1063,10 +1145,10 @@ export default function CaishenApp() {
                 border: "none",
                 background:
                   !wallet || isProcessing
-                    ? "#2A1A1A"
-                    : "linear-gradient(135deg, #FF1744 0%, #D50000 50%, #FF1744 100%)",
+                    ? "#E0D5C5"
+                    : "linear-gradient(135deg, #DC143C 0%, #A91030 50%, #DC143C 100%)",
                 backgroundSize: "200% auto",
-                color: !wallet || isProcessing ? "#5A4030" : "#fff",
+                color: !wallet || isProcessing ? "#A89F91" : "#fff",
                 fontSize: 16,
                 fontWeight: 700,
                 cursor: !wallet || isProcessing ? "not-allowed" : "pointer",
@@ -1074,7 +1156,7 @@ export default function CaishenApp() {
                 boxShadow: wallet && !isProcessing ? "0 6px 20px rgba(220,20,60,0.3)" : "none",
                 transition: "all 0.2s",
                 animation: wallet && !isProcessing ? "shimmer 3s linear infinite" : "none",
-                fontFamily: "'VT323', monospace",
+                fontFamily: "'DM Sans', sans-serif",
               }}
               onMouseDown={(e) => {
                 if (wallet && !isProcessing) e.currentTarget.style.transform = "scale(0.98)";
@@ -1084,9 +1166,9 @@ export default function CaishenApp() {
               {isProcessing ? "🧧 CáiShén is deciding..." : wallet ? "🧧 GIVE ME MY RED PACKET" : "Connect Wallet First"}
             </button>
 
-            {isTuesday() && (
-              <div style={{ textAlign: "center", fontSize: 11, color: "#FF1744", marginTop: 6, fontWeight: 500 }}>
-                ⚠️ Tuesday Penalty Active — Win probabilities halved
+            {(isTuesday() || isForbiddenDay() || isGhostHour()) && (
+              <div style={{ textAlign: "center", fontSize: 11, color: "#E74C3C", marginTop: 6, fontWeight: 500 }}>
+                ⚠️ {isForbiddenDay() ? "Forbidden Day" : isGhostHour() ? "Ghost Hour" : "Tuesday Penalty"} Active — Win probabilities halved
               </div>
             )}
           </div>
