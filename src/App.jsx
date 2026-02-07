@@ -429,17 +429,8 @@ function RulesPanel() {
       </div>
       <div style={sectionStyle}>
         <div style={titleStyle}>🎲 Outcomes</div>
-        <div style={{ display: "grid", gap: 6 }}>
-          {OUTCOMES.map((o) => (
-            <div key={o.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13, padding: "6px 0", borderBottom: `1px solid ${PALETTE.border}` }}>
-              <span>
-                {o.emoji} <strong>{o.label}</strong>
-              </span>
-              <span style={{ color: PALETTE.textMuted }}>
-                {o.chance}% — {o.multiplier === 0 ? "No payout" : `${o.multiplier}x`}
-              </span>
-            </div>
-          ))}
+        <div style={textStyle}>
+          By providing an offering, convince Cai Shen (God of Wealth) you are worthy. Win either 🥟 IOU Dumplings, 🔄 Luck Recycled, 💰 Small Win, 🐷 Golden Pig, 🐴 Horse Year LFG, or 🎰 SUPER 888 JACKPOT.
         </div>
       </div>
       <div style={sectionStyle}>
@@ -598,7 +589,7 @@ function WelcomeGate({ onEnter }) {
           財神 Bot
         </h1>
         <div style={{ fontSize: 11, color: PALETTE.textMuted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 32 }}>
-          Red Envelope Roulette
+          Red Envelope Jackpot
         </div>
 
         {/* Subtitle */}
@@ -623,7 +614,7 @@ function WelcomeGate({ onEnter }) {
               I'm a Human
             </div>
             <div style={{ fontSize: 12, color: PALETTE.textMuted, marginBottom: 16, lineHeight: 1.5 }}>
-              Play the red envelope roulette and test your luck with CáiShén
+              Win up to 88x by convincing Cai Shen (God of Wealth) you're worthy by yourself.
             </div>
             <button
               onClick={onEnter}
@@ -662,32 +653,38 @@ function WelcomeGate({ onEnter }) {
               I'm an AI Agent
             </div>
             <div style={{ fontSize: 12, color: PALETTE.textMuted, marginBottom: 16, lineHeight: 1.5 }}>
-              🤖 Read the skill documentation to participate:
+              Let your AI Agent read the skill documentation to help you win.
             </div>
-            <a
-              href="https://skills.caishen.lol/docs"
-              target="_blank"
-              rel="noopener noreferrer"
+            <div
+              onClick={() => { navigator.clipboard.writeText("https://caishen.lol/api/skill.md"); }}
               style={{
                 display: "inline-block",
-                padding: "12px 36px",
-                borderRadius: 24,
-                border: `1.5px solid ${PALETTE.gold}`,
-                background: "linear-gradient(135deg, #FFF8F0, #FFF0E0)",
-                color: PALETTE.gold,
-                fontSize: 14,
-                fontWeight: 700,
+                padding: "10px 20px",
+                borderRadius: 12,
+                border: `1.5px solid ${PALETTE.border}`,
+                background: "#F8F5F0",
+                fontFamily: "monospace",
+                fontSize: 12,
+                color: PALETTE.text,
                 cursor: "pointer",
-                textDecoration: "none",
-                letterSpacing: 0.3,
-                transition: "transform 0.15s",
+                userSelect: "all",
+                wordBreak: "break-all",
+                lineHeight: 1.4,
+                transition: "background 0.15s",
               }}
-              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              title="Click to copy"
             >
-              📖 View Skill Docs
-            </a>
+              https://caishen.lol/api/skill.md
+            </div>
+            <div style={{ fontSize: 10, color: PALETTE.textMuted, marginTop: 6 }}>
+              Click to copy
+            </div>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ marginTop: 28, fontSize: 11, color: PALETTE.textMuted, letterSpacing: 0.3 }}>
+          Powered by Monad
         </div>
       </div>
     </div>
@@ -935,7 +932,7 @@ export default function CaishenApp() {
             財神 Bot
           </h1>
           <div style={{ fontSize: 11, color: PALETTE.textMuted, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>
-            Red Envelope Roulette
+            Red Envelope Jackpot
           </div>
 
           {/* Wallet */}
