@@ -162,7 +162,7 @@ function PoolDisplay({ pool }) {
       <div style={{ position: "absolute", top: 10, right: 14, opacity: 0.15 }}>
         <GoldIngot size={28} />
       </div>
-      <div style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 3, color: PALETTE.textMuted, fontWeight: 600, marginBottom: 4 }}>
+      <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: PALETTE.textMuted, fontWeight: 600, marginBottom: 4 }}>
         🏮 Celestial Prize Pool 🏮
       </div>
       <div
@@ -178,7 +178,7 @@ function PoolDisplay({ pool }) {
       >
         {formatMON(pool)} <span style={{ fontSize: 18 }}>$MON</span>
       </div>
-      <div style={{ fontSize: 14, color: PALETTE.textLight, marginTop: 4 }}>
+      <div style={{ fontSize: 12, color: PALETTE.textLight, marginTop: 4 }}>
         Growing with every offering
       </div>
     </div>
@@ -224,7 +224,7 @@ function ChatMessage({ message, isBot }) {
             ? PALETTE.card
             : "linear-gradient(135deg, #DC143C, #A91030)",
           color: isBot ? PALETTE.text : "#fff",
-          fontSize: 16,
+          fontSize: 14,
           lineHeight: 1.55,
           border: isBot ? `1px solid ${PALETTE.border}` : "none",
           boxShadow: isBot
@@ -285,7 +285,7 @@ function EnvelopeReveal({ outcome, payout, onDone }) {
           >
             <div style={{ fontSize: 42, marginBottom: 8 }}>🧧</div>
             <div style={{ color: "#FFD700", fontSize: 28, fontWeight: 800 }}>福</div>
-            <div style={{ color: "rgba(255,215,0,0.7)", fontSize: 11, marginTop: 6, letterSpacing: 2, fontFamily: "'Press Start 2P', monospace" }}>
+            <div style={{ color: "rgba(255,215,0,0.7)", fontSize: 11, marginTop: 6, letterSpacing: 1 }}>
               {phase === 0 ? "CAISHEN DECIDES..." : "OPENING..."}
             </div>
             {/* Gold seal */}
@@ -345,14 +345,14 @@ function HistoryItem({ entry }) {
         background: PALETTE.card,
         border: `1px solid ${PALETTE.border}`,
         marginBottom: 8,
-        fontSize: 15,
+        fontSize: 13,
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <span style={{ fontSize: 20 }}>{o.emoji}</span>
         <div>
           <div style={{ fontWeight: 600, color: PALETTE.text }}>{o.label}</div>
-          <div style={{ color: PALETTE.textMuted, fontSize: 13 }}>Sent {entry.amount} MON</div>
+          <div style={{ color: PALETTE.textMuted, fontSize: 11 }}>Sent {entry.amount} MON</div>
         </div>
       </div>
       <div style={{ fontWeight: 700, color: entry.payout > 0 ? "#27AE60" : PALETTE.textMuted }}>
@@ -391,7 +391,7 @@ function TabBar({ active, onChange }) {
             borderRadius: 8,
             background: active === t.id ? "linear-gradient(135deg, #DC143C, #A91030)" : "transparent",
             color: active === t.id ? "#fff" : PALETTE.textMuted,
-            fontSize: 15,
+            fontSize: 13,
             fontWeight: 600,
             cursor: "pointer",
             transition: "all 0.2s",
@@ -417,8 +417,8 @@ function RulesPanel() {
     padding: "16px 18px",
     marginBottom: 12,
   };
-  const titleStyle = { fontSize: 17, fontWeight: 700, color: PALETTE.text, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 };
-  const textStyle = { fontSize: 15, color: PALETTE.textMuted, lineHeight: 1.6 };
+  const titleStyle = { fontSize: 15, fontWeight: 700, color: PALETTE.text, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 };
+  const textStyle = { fontSize: 13, color: PALETTE.textMuted, lineHeight: 1.6 };
 
   return (
     <div>
@@ -432,7 +432,7 @@ function RulesPanel() {
         <div style={titleStyle}>🎲 Outcomes</div>
         <div style={{ display: "grid", gap: 6 }}>
           {OUTCOMES.map((o) => (
-            <div key={o.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 15, padding: "6px 0", borderBottom: `1px solid ${PALETTE.border}` }}>
+            <div key={o.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13, padding: "6px 0", borderBottom: `1px solid ${PALETTE.border}` }}>
               <span>
                 {o.emoji} <strong>{o.label}</strong>
               </span>
@@ -757,10 +757,10 @@ export default function CaishenApp() {
     <>
       {/* Global styles */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Noto+Serif+SC:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: ${PALETTE.bg}; font-family: 'VT323', monospace; color: ${PALETTE.text}; -webkit-font-smoothing: antialiased; letter-spacing: 0.8px; font-size: 18px; }
+        body { background: ${PALETTE.bg}; font-family: 'DM Sans', sans-serif; color: ${PALETTE.text}; -webkit-font-smoothing: antialiased; }
 
         @keyframes floatY {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -841,7 +841,7 @@ export default function CaishenApp() {
           <h1
             style={{
               fontFamily: "'Noto Serif SC', serif",
-              fontSize: 32,
+              fontSize: 28,
               fontWeight: 900,
               background: "linear-gradient(135deg, #DC143C, #A91030)",
               WebkitBackgroundClip: "text",
@@ -851,7 +851,7 @@ export default function CaishenApp() {
           >
             財神 Bot
           </h1>
-          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: PALETTE.textMuted, letterSpacing: 2, textTransform: "uppercase", marginTop: 6 }}>
+          <div style={{ fontSize: 11, color: PALETTE.textMuted, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>
             Red Envelope Roulette
           </div>
 
@@ -867,7 +867,7 @@ export default function CaishenApp() {
                   borderRadius: 20,
                   background: PALETTE.cream,
                   border: `1px solid ${PALETTE.border}`,
-                  fontSize: 14,
+                  fontSize: 12,
                   color: PALETTE.textMuted,
                 }}
               >
@@ -883,7 +883,7 @@ export default function CaishenApp() {
                   border: "none",
                   background: "linear-gradient(135deg, #DC143C, #A91030)",
                   color: "#fff",
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: 600,
                   cursor: "pointer",
                   boxShadow: "0 4px 16px rgba(220,20,60,0.25)",
@@ -934,7 +934,7 @@ export default function CaishenApp() {
               {history.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "48px 20px", color: PALETTE.textLight }}>
                   <div style={{ fontSize: 40, marginBottom: 12 }}>🧧</div>
-                  <div style={{ fontSize: 16 }}>No offerings yet. Make your first play!</div>
+                  <div style={{ fontSize: 14 }}>No offerings yet. Make your first play!</div>
                 </div>
               ) : (
                 history.map((e, i) => <HistoryItem key={i} entry={e} />)
@@ -970,7 +970,7 @@ export default function CaishenApp() {
                     border: `1px solid ${amount === String(a) ? PALETTE.red : PALETTE.border}`,
                     background: amount === String(a) ? "rgba(220,20,60,0.06)" : PALETTE.cream,
                     color: amount === String(a) ? PALETTE.red : PALETTE.textMuted,
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: 600,
                     cursor: "pointer",
                     whiteSpace: "nowrap",
@@ -994,12 +994,12 @@ export default function CaishenApp() {
                   padding: "12px 80px 12px 16px",
                   borderRadius: 12,
                   border: `1.5px solid ${amountValid === true ? PALETTE.gold : amountValid === false ? "#E74C3C" : PALETTE.border}`,
-                  fontSize: 17,
+                  fontSize: 15,
                   fontWeight: 600,
                   background: amountValid === true ? "rgba(255,215,0,0.04)" : PALETTE.bg,
                   color: PALETTE.text,
                   transition: "border-color 0.2s, background 0.2s",
-                  fontFamily: "'VT323', monospace",
+                  fontFamily: "'DM Sans', sans-serif",
                 }}
               />
               <span
@@ -1008,7 +1008,7 @@ export default function CaishenApp() {
                   right: 14,
                   top: "50%",
                   transform: "translateY(-50%)",
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: 600,
                   color: PALETTE.textMuted,
                 }}
@@ -1041,12 +1041,12 @@ export default function CaishenApp() {
                 padding: "10px 14px",
                 borderRadius: 10,
                 border: `1px solid ${PALETTE.border}`,
-                fontSize: 15,
+                fontSize: 13,
                 background: PALETTE.bg,
                 color: PALETTE.text,
                 resize: "none",
                 marginBottom: 10,
-                fontFamily: "'VT323', monospace",
+                fontFamily: "'DM Sans', sans-serif",
                 lineHeight: 1.4,
               }}
             />
@@ -1066,14 +1066,14 @@ export default function CaishenApp() {
                     : "linear-gradient(135deg, #DC143C 0%, #A91030 50%, #DC143C 100%)",
                 backgroundSize: "200% auto",
                 color: !wallet || isProcessing ? "#A89F91" : "#fff",
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: 700,
                 cursor: !wallet || isProcessing ? "not-allowed" : "pointer",
                 letterSpacing: 0.5,
                 boxShadow: wallet && !isProcessing ? "0 6px 20px rgba(220,20,60,0.3)" : "none",
                 transition: "all 0.2s",
                 animation: wallet && !isProcessing ? "shimmer 3s linear infinite" : "none",
-                fontFamily: "'VT323', monospace",
+                fontFamily: "'DM Sans', sans-serif",
               }}
               onMouseDown={(e) => {
                 if (wallet && !isProcessing) e.currentTarget.style.transform = "scale(0.98)";
@@ -1084,7 +1084,7 @@ export default function CaishenApp() {
             </button>
 
             {isTuesday() && (
-              <div style={{ textAlign: "center", fontSize: 13, color: "#E74C3C", marginTop: 6, fontWeight: 500 }}>
+              <div style={{ textAlign: "center", fontSize: 11, color: "#E74C3C", marginTop: 6, fontWeight: 500 }}>
                 ⚠️ Tuesday Penalty Active — Win probabilities halved
               </div>
             )}
