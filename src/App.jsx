@@ -13,18 +13,18 @@ const OUTCOMES = [
 const SUGGESTED_AMOUNTS = [8, 18, 28, 88, 188, 888];
 
 const PALETTE = {
-  bg: "#0D0A08",
-  card: "#1A0E0E",
-  red: "#FF1744",
-  redDark: "#D50000",
-  gold: "#FFD740",
-  goldLight: "#FFEA00",
-  goldPale: "#3D2B0F",
-  text: "#FFE0B2",
-  textMuted: "#BF8040",
-  textLight: "#7A5C3A",
-  border: "#3D1A1A",
-  cream: "#1A0F0A",
+  bg: "#FFFAF5",
+  card: "#FFFFFF",
+  red: "#DC143C",
+  redDark: "#A91030",
+  gold: "#DAA520",
+  goldLight: "#FFD700",
+  goldPale: "#F4E1C1",
+  text: "#2B2D42",
+  textMuted: "#6B7280",
+  textLight: "#9CA3AF",
+  border: "#F0E6D8",
+  cream: "#FFF8F0",
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────
@@ -80,7 +80,7 @@ function FloatingElements() {
           style={{
             position: "absolute",
             fontSize: `${14 + Math.random() * 18}px`,
-            opacity: 0.12 + Math.random() * 0.1,
+            opacity: 0.08 + Math.random() * 0.06,
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
             animation: `floatY ${12 + Math.random() * 10}s ease-in-out infinite`,
@@ -101,18 +101,18 @@ function FuSymbol({ size = 48, style = {} }) {
       style={{
         width: size,
         height: size,
-        background: "linear-gradient(135deg, #FF1744 0%, #D50000 100%)",
+        background: "linear-gradient(135deg, #DC143C 0%, #A91030 100%)",
         borderRadius: 6,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         transform: "rotate(180deg)",
-        border: "2px solid #FFD740",
-        boxShadow: "0 2px 8px rgba(255,23,68,0.35)",
+        border: "2px solid #FFD700",
+        boxShadow: "0 2px 8px rgba(220,20,60,0.25)",
         ...style,
       }}
     >
-      <span style={{ fontSize: size * 0.55, color: "#FFD740", fontWeight: 800, transform: "rotate(180deg)" }}>
+      <span style={{ fontSize: size * 0.55, color: "#FFD700", fontWeight: 800, transform: "rotate(180deg)" }}>
         福
       </span>
     </div>
@@ -147,7 +147,7 @@ function PoolDisplay({ pool }) {
   return (
     <div
       style={{
-        background: "linear-gradient(135deg, #1A0F0A 0%, #2A1A0A 100%)",
+        background: "linear-gradient(135deg, #FFF8F0 0%, #FFF0E0 100%)",
         border: `1.5px solid ${PALETTE.goldPale}`,
         borderRadius: 16,
         padding: "20px 24px",
@@ -162,14 +162,14 @@ function PoolDisplay({ pool }) {
       <div style={{ position: "absolute", top: 10, right: 14, opacity: 0.15 }}>
         <GoldIngot size={28} />
       </div>
-      <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 2, color: PALETTE.textMuted, fontWeight: 600, marginBottom: 4 }}>
+      <div style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 3, color: PALETTE.textMuted, fontWeight: 600, marginBottom: 4 }}>
         🏮 Celestial Prize Pool 🏮
       </div>
       <div
         style={{
           fontSize: 38,
           fontWeight: 800,
-          background: "linear-gradient(135deg, #FFD740, #FFEA00, #FFD740)",
+          background: "linear-gradient(135deg, #DAA520, #FFD700, #DAA520)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           letterSpacing: -1,
@@ -178,7 +178,7 @@ function PoolDisplay({ pool }) {
       >
         {formatMON(pool)} <span style={{ fontSize: 18 }}>$MON</span>
       </div>
-      <div style={{ fontSize: 12, color: PALETTE.textLight, marginTop: 4 }}>
+      <div style={{ fontSize: 14, color: PALETTE.textLight, marginTop: 4 }}>
         Growing with every offering
       </div>
     </div>
@@ -202,14 +202,14 @@ function ChatMessage({ message, isBot }) {
             width: 34,
             height: 34,
             borderRadius: "50%",
-            background: "linear-gradient(135deg, #FF1744, #D50000)",
+            background: "linear-gradient(135deg, #DC143C, #A91030)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginRight: 8,
             flexShrink: 0,
             fontSize: 16,
-            boxShadow: "0 2px 8px rgba(255,23,68,0.3)",
+            boxShadow: "0 2px 8px rgba(220,20,60,0.2)",
           }}
         >
           🧧
@@ -222,9 +222,9 @@ function ChatMessage({ message, isBot }) {
           borderRadius: isBot ? "4px 16px 16px 16px" : "16px 4px 16px 16px",
           background: isBot
             ? PALETTE.card
-            : "linear-gradient(135deg, #FF1744, #D50000)",
+            : "linear-gradient(135deg, #DC143C, #A91030)",
           color: isBot ? PALETTE.text : "#fff",
-          fontSize: 14,
+          fontSize: 16,
           lineHeight: 1.55,
           border: isBot ? `1px solid ${PALETTE.border}` : "none",
           boxShadow: isBot
@@ -271,21 +271,21 @@ function EnvelopeReveal({ outcome, payout, onDone }) {
             style={{
               width: 180,
               height: 240,
-              background: "linear-gradient(180deg, #FF1744 0%, #D50000 100%)",
+              background: "linear-gradient(180deg, #DC143C 0%, #A91030 100%)",
               borderRadius: 16,
               border: "3px solid #FFD700",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 20px 60px rgba(255,23,68,0.4), 0 0 40px rgba(255,215,0,0.2)",
+              boxShadow: "0 20px 60px rgba(220,20,60,0.4), 0 0 40px rgba(255,215,0,0.15)",
               animation: phase === 1 ? "envelopeShake 0.5s ease-in-out infinite" : "envelopePulse 1.5s ease-in-out infinite",
               position: "relative",
             }}
           >
             <div style={{ fontSize: 42, marginBottom: 8 }}>🧧</div>
             <div style={{ color: "#FFD700", fontSize: 28, fontWeight: 800 }}>福</div>
-            <div style={{ color: "rgba(255,215,0,0.7)", fontSize: 10, marginTop: 6, letterSpacing: 1, fontFamily: "'Press Start 2P', monospace" }}>
+            <div style={{ color: "rgba(255,215,0,0.7)", fontSize: 11, marginTop: 6, letterSpacing: 2, fontFamily: "'Press Start 2P', monospace" }}>
               {phase === 0 ? "CAISHEN DECIDES..." : "OPENING..."}
             </div>
             {/* Gold seal */}
@@ -345,14 +345,14 @@ function HistoryItem({ entry }) {
         background: PALETTE.card,
         border: `1px solid ${PALETTE.border}`,
         marginBottom: 8,
-        fontSize: 13,
+        fontSize: 15,
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <span style={{ fontSize: 20 }}>{o.emoji}</span>
         <div>
           <div style={{ fontWeight: 600, color: PALETTE.text }}>{o.label}</div>
-          <div style={{ color: PALETTE.textMuted, fontSize: 11 }}>Sent {entry.amount} MON</div>
+          <div style={{ color: PALETTE.textMuted, fontSize: 13 }}>Sent {entry.amount} MON</div>
         </div>
       </div>
       <div style={{ fontWeight: 700, color: entry.payout > 0 ? "#27AE60" : PALETTE.textMuted }}>
@@ -389,9 +389,9 @@ function TabBar({ active, onChange }) {
             padding: "8px 0",
             border: "none",
             borderRadius: 8,
-            background: active === t.id ? "linear-gradient(135deg, #FF1744, #D50000)" : "transparent",
+            background: active === t.id ? "linear-gradient(135deg, #DC143C, #A91030)" : "transparent",
             color: active === t.id ? "#fff" : PALETTE.textMuted,
-            fontSize: 13,
+            fontSize: 15,
             fontWeight: 600,
             cursor: "pointer",
             transition: "all 0.2s",
@@ -417,8 +417,8 @@ function RulesPanel() {
     padding: "16px 18px",
     marginBottom: 12,
   };
-  const titleStyle = { fontSize: 15, fontWeight: 700, color: PALETTE.text, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 };
-  const textStyle = { fontSize: 13, color: PALETTE.textMuted, lineHeight: 1.6 };
+  const titleStyle = { fontSize: 17, fontWeight: 700, color: PALETTE.text, marginBottom: 8, display: "flex", alignItems: "center", gap: 8 };
+  const textStyle = { fontSize: 15, color: PALETTE.textMuted, lineHeight: 1.6 };
 
   return (
     <div>
@@ -432,7 +432,7 @@ function RulesPanel() {
         <div style={titleStyle}>🎲 Outcomes</div>
         <div style={{ display: "grid", gap: 6 }}>
           {OUTCOMES.map((o) => (
-            <div key={o.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13, padding: "6px 0", borderBottom: `1px solid ${PALETTE.border}` }}>
+            <div key={o.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 15, padding: "6px 0", borderBottom: `1px solid ${PALETTE.border}` }}>
               <span>
                 {o.emoji} <strong>{o.label}</strong>
               </span>
@@ -760,7 +760,7 @@ export default function CaishenApp() {
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Noto+Serif+SC:wght@400;700;900&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: ${PALETTE.bg}; font-family: 'VT323', monospace; color: ${PALETTE.text}; -webkit-font-smoothing: antialiased; }
+        body { background: ${PALETTE.bg}; font-family: 'VT323', monospace; color: ${PALETTE.text}; -webkit-font-smoothing: antialiased; letter-spacing: 0.8px; font-size: 18px; }
 
         @keyframes floatY {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -843,16 +843,15 @@ export default function CaishenApp() {
               fontFamily: "'Noto Serif SC', serif",
               fontSize: 32,
               fontWeight: 900,
-              background: "linear-gradient(135deg, #FF1744, #FF5252)",
+              background: "linear-gradient(135deg, #DC143C, #A91030)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               lineHeight: 1.2,
-              textShadow: "0 0 30px rgba(255,23,68,0.4)",
             }}
           >
             財神 Bot
           </h1>
-          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: PALETTE.gold, letterSpacing: 2, textTransform: "uppercase", marginTop: 6 }}>
+          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: PALETTE.textMuted, letterSpacing: 2, textTransform: "uppercase", marginTop: 6 }}>
             Red Envelope Roulette
           </div>
 
@@ -868,7 +867,7 @@ export default function CaishenApp() {
                   borderRadius: 20,
                   background: PALETTE.cream,
                   border: `1px solid ${PALETTE.border}`,
-                  fontSize: 12,
+                  fontSize: 14,
                   color: PALETTE.textMuted,
                 }}
               >
@@ -882,12 +881,12 @@ export default function CaishenApp() {
                   padding: "10px 28px",
                   borderRadius: 24,
                   border: "none",
-                  background: "linear-gradient(135deg, #FF1744, #D50000)",
+                  background: "linear-gradient(135deg, #DC143C, #A91030)",
                   color: "#fff",
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: 600,
                   cursor: "pointer",
-                  boxShadow: "0 4px 16px rgba(255,23,68,0.35)",
+                  boxShadow: "0 4px 16px rgba(220,20,60,0.25)",
                   transition: "transform 0.15s",
                 }}
                 onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
@@ -935,7 +934,7 @@ export default function CaishenApp() {
               {history.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "48px 20px", color: PALETTE.textLight }}>
                   <div style={{ fontSize: 40, marginBottom: 12 }}>🧧</div>
-                  <div style={{ fontSize: 14 }}>No offerings yet. Make your first play!</div>
+                  <div style={{ fontSize: 16 }}>No offerings yet. Make your first play!</div>
                 </div>
               ) : (
                 history.map((e, i) => <HistoryItem key={i} entry={e} />)
@@ -969,9 +968,9 @@ export default function CaishenApp() {
                     padding: "5px 12px",
                     borderRadius: 16,
                     border: `1px solid ${amount === String(a) ? PALETTE.red : PALETTE.border}`,
-                    background: amount === String(a) ? "rgba(255,23,68,0.15)" : PALETTE.cream,
+                    background: amount === String(a) ? "rgba(220,20,60,0.06)" : PALETTE.cream,
                     color: amount === String(a) ? PALETTE.red : PALETTE.textMuted,
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: 600,
                     cursor: "pointer",
                     whiteSpace: "nowrap",
@@ -994,10 +993,10 @@ export default function CaishenApp() {
                   width: "100%",
                   padding: "12px 80px 12px 16px",
                   borderRadius: 12,
-                  border: `1.5px solid ${amountValid === true ? PALETTE.gold : amountValid === false ? "#FF1744" : PALETTE.border}`,
-                  fontSize: 15,
+                  border: `1.5px solid ${amountValid === true ? PALETTE.gold : amountValid === false ? "#E74C3C" : PALETTE.border}`,
+                  fontSize: 17,
                   fontWeight: 600,
-                  background: amountValid === true ? "rgba(255,215,0,0.1)" : PALETTE.card,
+                  background: amountValid === true ? "rgba(255,215,0,0.04)" : PALETTE.bg,
                   color: PALETTE.text,
                   transition: "border-color 0.2s, background 0.2s",
                   fontFamily: "'VT323', monospace",
@@ -1009,7 +1008,7 @@ export default function CaishenApp() {
                   right: 14,
                   top: "50%",
                   transform: "translateY(-50%)",
-                  fontSize: 12,
+                  fontSize: 14,
                   fontWeight: 600,
                   color: PALETTE.textMuted,
                 }}
@@ -1042,7 +1041,7 @@ export default function CaishenApp() {
                 padding: "10px 14px",
                 borderRadius: 10,
                 border: `1px solid ${PALETTE.border}`,
-                fontSize: 13,
+                fontSize: 15,
                 background: PALETTE.bg,
                 color: PALETTE.text,
                 resize: "none",
@@ -1063,11 +1062,11 @@ export default function CaishenApp() {
                 border: "none",
                 background:
                   !wallet || isProcessing
-                    ? "#2A1A1A"
-                    : "linear-gradient(135deg, #FF1744 0%, #D50000 50%, #FF1744 100%)",
+                    ? "#E0D5C5"
+                    : "linear-gradient(135deg, #DC143C 0%, #A91030 50%, #DC143C 100%)",
                 backgroundSize: "200% auto",
-                color: !wallet || isProcessing ? "#5A4030" : "#fff",
-                fontSize: 16,
+                color: !wallet || isProcessing ? "#A89F91" : "#fff",
+                fontSize: 18,
                 fontWeight: 700,
                 cursor: !wallet || isProcessing ? "not-allowed" : "pointer",
                 letterSpacing: 0.5,
@@ -1085,7 +1084,7 @@ export default function CaishenApp() {
             </button>
 
             {isTuesday() && (
-              <div style={{ textAlign: "center", fontSize: 11, color: "#FF1744", marginTop: 6, fontWeight: 500 }}>
+              <div style={{ textAlign: "center", fontSize: 13, color: "#E74C3C", marginTop: 6, fontWeight: 500 }}>
                 ⚠️ Tuesday Penalty Active — Win probabilities halved
               </div>
             )}
