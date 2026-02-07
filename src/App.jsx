@@ -3,10 +3,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 // ─── Constants ───────────────────────────────────────────────────────
 const OUTCOMES = [
   { emoji: "🥟", label: "IOU Dumplings", chance: 50, multiplier: 0, color: "#8B7355" },
-  { emoji: "🔄", label: "Luck Recycled", chance: 24.9, multiplier: 0, color: "#9B59B6" },
+  { emoji: "🔄", label: "Luck Recycled", chance: 26.9, multiplier: 0, color: "#9B59B6" },
   { emoji: "💰", label: "Small Win", chance: 15, multiplier: 1.5, color: "#27AE60" },
   { emoji: "🐷", label: "Golden Pig", chance: 8, multiplier: 3, color: "#F39C12" },
-  { emoji: "🧧", label: "JACKPOT", chance: 2, multiplier: -1, color: "#DC143C" },
   { emoji: "🎰", label: "SUPER JACKPOT", chance: 0.1, multiplier: 88, color: "#FFD700" },
 ];
 
@@ -37,11 +36,11 @@ function isDeathNumber(val) {
   return (s.match(/4/g) || []).length >= 2;
 }
 
-function rollOutcome(isTuesday) {
+function rollOutcome(penaltyActive) {
   const rand = Math.random() * 100;
-  const probs = isTuesday
-    ? [62.4, 24.9, 7.5, 4, 1, 0.2]
-    : [50, 24.9, 15, 8, 2, 0.1];
+  const probs = penaltyActive
+    ? [62.4, 25.9, 7.5, 4, 0.2]
+    : [50, 26.9, 15, 8, 0.1];
   let cumulative = 0;
   for (let i = 0; i < probs.length; i++) {
     cumulative += probs[i];
@@ -425,7 +424,7 @@ function RulesPanel() {
       <div style={sectionStyle}>
         <div style={titleStyle}>🎯 How to Play</div>
         <div style={textStyle}>
-          Send a minimum of <strong>8 $MON</strong> to CáiShén. Your offering must contain the digit "8" somewhere in the amount. CáiShén will reveal your red envelope's contents with one of six possible outcomes.
+          Send a minimum of <strong>8 $MON</strong> to CáiShén. Your offering must contain the digit "8" somewhere in the amount. CáiShén will reveal your red envelope's contents with one of five possible outcomes.
         </div>
       </div>
       <div style={sectionStyle}>
@@ -437,7 +436,7 @@ function RulesPanel() {
                 {o.emoji} <strong>{o.label}</strong>
               </span>
               <span style={{ color: PALETTE.textMuted }}>
-                {o.chance}% — {o.multiplier === 0 ? "No payout" : o.multiplier === -1 ? "Entire Pool" : `${o.multiplier}x`}
+                {o.chance}% — {o.multiplier === 0 ? "No payout" : `${o.multiplier}x`}
               </span>
             </div>
           ))}
@@ -446,11 +445,11 @@ function RulesPanel() {
       <div style={sectionStyle}>
         <div style={titleStyle}>⚠️ Superstitions & Forbidden Times</div>
         <div style={textStyle}>
-          <strong>Death Numbers:</strong> Amounts with multiple 4s trigger a block — CáiShén goes offline.
+          <strong>Death Numbers:</strong> Amounts with multiple 4s — Win probabilities are halved.
           <br /><br />
-          <strong>Forbidden Days:</strong> 4th, 14th, 24th of any month — No operations.
+          <strong>Forbidden Days:</strong> 4th, 14th, 24th of any month — Win probabilities are halved.
           <br /><br />
-          <strong>Ghost Hour:</strong> 4:44 AM/PM — No transactions.
+          <strong>Ghost Hour:</strong> 4:44 AM/PM — Win probabilities are halved.
           <br /><br />
           <strong>Tuesday Penalty:</strong> All win probabilities are halved on Tuesdays.
         </div>
@@ -595,26 +594,6 @@ export default function CaishenApp() {
     // Add user message
     addMessage(`${val} MON offering${wish ? ` — "${wish}"` : ""}`, false);
 
-    // Forbidden day check
-    if (isForbiddenDay()) {
-      addMessage(`You dare approach on the ${new Date().getDate()}th? The number of death haunts this day. CáiShén does not operate today. Return on a more auspicious date.`);
-      return;
-    }
-
-    // Ghost hour
-    if (isGhostHour()) {
-      addMessage("4:44... The Ghost Hour. Even gods rest during this cursed minute. Return later.");
-      return;
-    }
-
-    // Death number
-    if (isDeathNumber(val)) {
-      addMessage("... I pretend I did not see this. *CáiShén has gone offline for 4 minutes* ☠️");
-      setAmount("");
-      setWish("");
-      return;
-    }
-
     // Below minimum
     if (val < 8) {
       addMessage(`${val} MON? The minimum offering is 8 MON. You insult me with pocket change? Return when you are serious about prosperity.`);
@@ -632,6 +611,10 @@ export default function CaishenApp() {
 
     // Valid! Process
     setIsProcessing(true);
+
+    // Check for penalty conditions (all halve win probabilities)
+    const penaltyActive = isTuesday() || isForbiddenDay() || isGhostHour() || isDeathNumber(val);
+
     const eightCount = (String(val).match(/8/g) || []).length;
     const eightComment =
       eightCount >= 4
@@ -642,11 +625,22 @@ export default function CaishenApp() {
         ? "Double 8s! Twice the luck!"
         : "The sacred 8 is present. Acceptable.";
 
-    addMessage(`${val} MON received. ${eightComment} Let us see what the universe owes you... 🧧`);
+    let penaltyWarning = "";
+    if (isForbiddenDay()) {
+      penaltyWarning = ` ⚠️ The ${new Date().getDate()}th... a day haunted by death. Win probabilities halved!`;
+    } else if (isGhostHour()) {
+      penaltyWarning = " ⚠️ 4:44... The Ghost Hour dims your fortune. Win probabilities halved!";
+    } else if (isDeathNumber(val)) {
+      penaltyWarning = " ⚠️ Multiple 4s... death numbers cloud your luck. Win probabilities halved! ☠️";
+    } else if (isTuesday()) {
+      penaltyWarning = " ⚠️ Tuesday penalty — win probabilities halved!";
+    }
+
+    addMessage(`${val} MON received. ${eightComment}${penaltyWarning} Let us see what the universe owes you... 🧧`);
 
     // Determine outcome after dramatic pause
     setTimeout(() => {
-      const outcomeIdx = rollOutcome(isTuesday());
+      const outcomeIdx = rollOutcome(penaltyActive);
       const outcome = OUTCOMES[outcomeIdx];
       let payout = 0;
 
@@ -665,10 +659,6 @@ export default function CaishenApp() {
         // Golden Pig
         payout = val * 3;
       } else if (outcomeIdx === 4) {
-        // Jackpot
-        payout = pool;
-        setPool(88.88); // Reset
-      } else if (outcomeIdx === 5) {
         // Super Jackpot
         payout = Math.min(val * 88, pool * 0.5);
         setPool((p) => p - payout);
@@ -690,7 +680,6 @@ export default function CaishenApp() {
       `Your luck has been... recycled. Added to the Celestial Pool (now ${formatMON(pool)} MON). Your sacrifice feeds future fortunes. 🔄`,
       `Minor Blessing Detected! ${formatMON(r.payout)} MON returned. The universe acknowledges you. Nothing more, nothing less. 💰`,
       `THE GOLDEN PIG APPEARS! 🐷 ${formatMON(r.payout)} MON rushing to your wallet! Your ancestors are smiling. Your enemies are confused.`,
-      `🧧🧧🧧 圣! STOP EVERYTHING! THE CELESTIAL ENVELOPE HAS CHOSEN YOU! Pool of ${formatMON(r.payout)} MON transferred! Your ancestors are WEEPING with pride! Please face Southeast and say thank you. 恭喜發財!`,
       `🎰🎰🎰 天啊! HEAVENS ABOVE! THE DOUBLE 8 FORTUNE HAS MANIFESTED! 88x DIVINE MULTIPLIER! ${formatMON(r.payout)} MON materializing! 發發發! DOUBLE PROSPERITY!`,
     ];
 
@@ -1032,9 +1021,9 @@ export default function CaishenApp() {
               {isProcessing ? "🧧 CáiShén is deciding..." : wallet ? "🧧 GIVE ME MY RED PACKET" : "Connect Wallet First"}
             </button>
 
-            {isTuesday() && (
+            {(isTuesday() || isForbiddenDay() || isGhostHour()) && (
               <div style={{ textAlign: "center", fontSize: 11, color: "#E74C3C", marginTop: 6, fontWeight: 500 }}>
-                ⚠️ Tuesday Penalty Active — Win probabilities halved
+                ⚠️ {isForbiddenDay() ? "Forbidden Day" : isGhostHour() ? "Ghost Hour" : "Tuesday Penalty"} Active — Win probabilities halved
               </div>
             )}
           </div>
