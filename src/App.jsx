@@ -482,117 +482,71 @@ function ChibiCaiShen() {
         bottom: 40,
         zIndex: 10,
         animation: "chibiFloat 3s ease-in-out infinite",
-        filter: "drop-shadow(0 0 24px rgba(255,215,0,0.3))",
+        filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.12))",
         pointerEvents: "none",
       }}
     >
-      <svg width="130" height="190" viewBox="0 0 130 190" fill="none">
-        <defs>
-          <radialGradient id="caiGlow">
-            <stop offset="0%" stopColor="#FFD740" />
-            <stop offset="100%" stopColor="transparent" />
-          </radialGradient>
-          <linearGradient id="robeGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#FF1744" />
-            <stop offset="100%" stopColor="#B71C1C" />
-          </linearGradient>
-          <linearGradient id="hatGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#2C2C2C" />
-            <stop offset="100%" stopColor="#1A1A1A" />
-          </linearGradient>
-          <linearGradient id="ingotGradC" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#FFEA00" />
-            <stop offset="100%" stopColor="#FFA000" />
-          </linearGradient>
-        </defs>
+      <svg width="120" height="168" viewBox="0 0 160 224">
+        {/* === BODY (red ball, behind face) === */}
+        <ellipse cx="80" cy="168" rx="54" ry="50" fill="#C0392B" />
 
-        {/* Soft glow behind character */}
-        <circle cx="65" cy="95" r="60" fill="url(#caiGlow)" opacity="0.12" />
-
-        {/* === HAT (官帽) === */}
-        <rect x="30" y="12" width="70" height="10" rx="2" fill="url(#hatGrad)" stroke="#FFD740" strokeWidth="1.2" />
-        <rect x="42" y="3" width="46" height="13" rx="3" fill="url(#hatGrad)" stroke="#FFD740" strokeWidth="1.2" />
-        {/* Hat ornament */}
-        <circle cx="65" cy="9" r="4" fill="#FF1744" />
-        <circle cx="65" cy="9" r="2" fill="#FFEA00" />
-        {/* Hat wings */}
-        <ellipse cx="25" cy="16" rx="8" ry="3" fill="#1A1A1A" stroke="#FFD740" strokeWidth="0.8" />
-        <ellipse cx="105" cy="16" rx="8" ry="3" fill="#1A1A1A" stroke="#FFD740" strokeWidth="0.8" />
+        {/* === ARMS (small round bumps) === */}
+        <ellipse cx="22" cy="152" rx="14" ry="12" fill="#C0392B" />
+        <ellipse cx="138" cy="152" rx="14" ry="12" fill="#C0392B" />
 
         {/* === FACE === */}
-        <circle cx="65" cy="46" r="28" fill="#FFDAB9" />
-        {/* Eyebrows */}
-        <path d="M48 35 Q53 31 58 35" fill="none" stroke="#5D4037" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M72 35 Q77 31 82 35" fill="none" stroke="#5D4037" strokeWidth="1.8" strokeLinecap="round" />
-        {/* Eyes - large cute chibi style */}
-        <ellipse cx="53" cy="42" rx="4" ry="4.5" fill="#1A1A1A" />
-        <ellipse cx="77" cy="42" rx="4" ry="4.5" fill="#1A1A1A" />
-        <circle cx="54.5" cy="40.5" r="1.5" fill="#FFF" />
-        <circle cx="78.5" cy="40.5" r="1.5" fill="#FFF" />
-        <circle cx="52" cy="43.5" r="0.8" fill="#FFF" opacity="0.6" />
-        <circle cx="76" cy="43.5" r="0.8" fill="#FFF" opacity="0.6" />
-        {/* Blush */}
-        <circle cx="44" cy="49" r="5" fill="#FF8A80" opacity="0.45" />
-        <circle cx="86" cy="49" r="5" fill="#FF8A80" opacity="0.45" />
-        {/* Happy smile */}
-        <path d="M56 52 Q65 60 74 52" fill="none" stroke="#5D4037" strokeWidth="2" strokeLinecap="round" />
-        {/* Small open mouth */}
-        <ellipse cx="65" cy="54" rx="3" ry="2" fill="#C62828" />
+        <circle cx="80" cy="84" r="38" fill="#FCEBD5" />
 
-        {/* === BEARD === */}
-        <path d="M50 60 Q45 75 40 88" fill="none" stroke="#E0E0E0" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M57 63 Q55 78 52 90" fill="none" stroke="#E0E0E0" strokeWidth="2" strokeLinecap="round" />
-        <path d="M65 64 Q65 80 65 92" fill="none" stroke="#E0E0E0" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M73 63 Q75 78 78 90" fill="none" stroke="#E0E0E0" strokeWidth="2" strokeLinecap="round" />
-        <path d="M80 60 Q85 75 90 88" fill="none" stroke="#E0E0E0" strokeWidth="2.5" strokeLinecap="round" />
+        {/* === HAT === */}
+        {/* Hat top (red block) */}
+        <rect x="40" y="10" width="80" height="30" rx="4" fill="#CC3333" />
+        {/* Hat medallion with 財 */}
+        <circle cx="80" cy="17" r="11" fill="#B22222" stroke="#DAA520" strokeWidth="2" />
+        <text x="80" y="21.5" textAnchor="middle" fill="#DAA520" fontSize="11" fontWeight="bold" fontFamily="'Noto Serif SC', serif">財</text>
+        {/* Gold dots on hat top */}
+        <circle cx="50" cy="28" r="3" fill="#DAA520" />
+        <circle cx="110" cy="28" r="3" fill="#DAA520" />
+        {/* Hat brim */}
+        <rect x="28" y="38" width="104" height="16" rx="2" fill="#CC3333" />
+        {/* Gold band */}
+        <rect x="28" y="43" width="104" height="11" rx="1" fill="#DAA520" />
+        {/* Decorative dots on gold band */}
+        <circle cx="44" cy="48" r="3.5" fill="#CC3333" />
+        <circle cx="62" cy="48" r="3.5" fill="#CC3333" />
+        <circle cx="80" cy="48" r="4" fill="#2E8B57" />
+        <circle cx="98" cy="48" r="3.5" fill="#CC3333" />
+        <circle cx="116" cy="48" r="3.5" fill="#CC3333" />
 
-        {/* === BODY / ROBE === */}
-        <path d="M36 70 Q28 82 24 125 Q24 142 65 146 Q106 142 106 125 Q102 82 94 70" fill="url(#robeGrad)" stroke="#FFD740" strokeWidth="1.5" />
-        {/* Robe collar */}
-        <path d="M50 70 L65 86 L80 70" fill="none" stroke="#FFD740" strokeWidth="2" />
-        {/* Center seam */}
-        <line x1="65" y1="86" x2="65" y2="143" stroke="#FFD740" strokeWidth="1.2" opacity="0.6" />
-        {/* Robe trim */}
-        <path d="M30 125 Q65 135 100 125" fill="none" stroke="#FFD740" strokeWidth="1" opacity="0.5" />
-        {/* 福 character on belly */}
-        <rect x="51" y="98" width="28" height="28" rx="3" fill="#B71C1C" stroke="#FFD740" strokeWidth="1" />
-        <text x="65" y="119" textAnchor="middle" fill="#FFD740" fontSize="18" fontWeight="bold" fontFamily="'Noto Serif SC', serif">福</text>
+        {/* === EYES (closed happy ^_^) === */}
+        <path d="M60 80 Q66 71 72 80" fill="none" stroke="#3E2723" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M88 80 Q94 71 100 80" fill="none" stroke="#3E2723" strokeWidth="2.8" strokeLinecap="round" />
 
-        {/* === LEFT ARM (waving coin) === */}
-        <path d="M32 85 Q16 95 12 108" fill="none" stroke="#FF1744" strokeWidth="12" strokeLinecap="round" />
-        <path d="M32 85 Q16 95 12 108" fill="none" stroke="#B71C1C" strokeWidth="10" strokeLinecap="round" />
-        <g style={{ animation: "coinWave 2s ease-in-out infinite" }}>
-          <circle cx="12" cy="114" r="10" fill="#FFD740" stroke="#FFA000" strokeWidth="1.5" />
-          <circle cx="12" cy="114" r="6" fill="none" stroke="#FFA000" strokeWidth="0.8" />
-          <rect x="10" y="110" width="4" height="8" rx="1" fill="#FFA000" opacity="0.5" />
-        </g>
+        {/* === ROSY CHEEKS === */}
+        <circle cx="54" cy="90" r="8" fill="#E8A0A0" opacity="0.5" />
+        <circle cx="106" cy="90" r="8" fill="#E8A0A0" opacity="0.5" />
 
-        {/* === RIGHT ARM (holding gold ingot) === */}
-        <path d="M98 85 Q114 95 118 108" fill="none" stroke="#FF1744" strokeWidth="12" strokeLinecap="round" />
-        <path d="M98 85 Q114 95 118 108" fill="none" stroke="#B71C1C" strokeWidth="10" strokeLinecap="round" />
-        {/* Gold ingot */}
-        <path d="M105 110 Q103 115 104 118 L118 118 L132 118 Q133 115 131 110 Z" fill="url(#ingotGradC)" stroke="#FFA000" strokeWidth="1" />
-        <path d="M110 110 L114 105 L122 105 L126 110" fill="#FFEA00" stroke="#FFA000" strokeWidth="0.8" />
+        {/* === MUSTACHE === */}
+        <path d="M70 96 Q62 89 52 93" fill="none" stroke="#3E2723" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M90 96 Q98 89 108 93" fill="none" stroke="#3E2723" strokeWidth="2.2" strokeLinecap="round" />
 
-        {/* === FEET === */}
-        <ellipse cx="52" cy="149" rx="11" ry="5" fill="#1A1A1A" stroke="#333" strokeWidth="0.5" />
-        <ellipse cx="78" cy="149" rx="11" ry="5" fill="#1A1A1A" stroke="#333" strokeWidth="0.5" />
+        {/* === BEARD (dark oval) === */}
+        <ellipse cx="80" cy="104" rx="14" ry="12" fill="#4E2C17" />
 
-        {/* === SPARKLE EFFECTS === */}
-        <g>
-          <path d="M8 28 L10 22 L12 28 L10 34 Z" fill="#FFD740">
-            <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite" />
-          </path>
-          <path d="M115 24 L117 18 L119 24 L117 30 Z" fill="#FFD740">
-            <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" begin="0.7s" repeatCount="indefinite" />
-          </path>
-          <path d="M4 120 L6 114 L8 120 L6 126 Z" fill="#FFD740">
-            <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" begin="1.4s" repeatCount="indefinite" />
-          </path>
-          <path d="M122 70 L124 65 L126 70 L124 75 Z" fill="#FFEA00">
-            <animate attributeName="opacity" values="0.3;0.9;0.3" dur="1.8s" begin="0.3s" repeatCount="indefinite" />
-          </path>
-        </g>
+        {/* === GOLD SCEPTER BAR === */}
+        <rect x="34" y="132" width="92" height="9" rx="4.5" fill="#DAA520" />
+        <circle cx="80" cy="136.5" r="5.5" fill="#2E8B57" />
+
+        {/* === ROBE RING DECORATIONS === */}
+        <circle cx="60" cy="182" r="7" fill="none" stroke="#DAA520" strokeWidth="2.5" />
+        <circle cx="100" cy="182" r="7" fill="none" stroke="#DAA520" strokeWidth="2.5" />
+
+        {/* === FLOATING GOLD INGOTS === */}
+        <ellipse cx="16" cy="30" rx="10" ry="4.5" fill="#DAA520" transform="rotate(-25 16 30)">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" repeatCount="indefinite" />
+        </ellipse>
+        <ellipse cx="144" cy="30" rx="10" ry="4.5" fill="#DAA520" transform="rotate(25 144 30)">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" begin="0.8s" repeatCount="indefinite" />
+        </ellipse>
       </svg>
     </div>
   );
@@ -795,11 +749,6 @@ export default function CaishenApp() {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-12px); }
         }
-        @keyframes coinWave {
-          0%, 100% { transform: rotate(-5deg); }
-          50% { transform: rotate(5deg); }
-        }
-
         input::placeholder, textarea::placeholder { color: ${PALETTE.textLight}; }
         input:focus, textarea:focus { outline: none; }
         ::-webkit-scrollbar { width: 4px; }
