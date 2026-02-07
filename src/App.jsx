@@ -551,8 +551,152 @@ function ChibiCaiShen() {
   );
 }
 
+// ─── Welcome Gate (shows on page load) ──────────────────────────────
+function WelcomeGate({ onEnter }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 200,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: PALETTE.bg,
+        animation: "fadeIn 0.4s ease-out",
+      }}
+    >
+      <FloatingElements />
+      <div
+        style={{
+          maxWidth: 420,
+          width: "90%",
+          padding: "36px 28px",
+          textAlign: "center",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 12 }}>
+          <GoldIngot size={24} />
+          <FuSymbol size={42} />
+          <GoldIngot size={24} />
+        </div>
+        <h1
+          style={{
+            fontFamily: "'Noto Serif SC', serif",
+            fontSize: 32,
+            fontWeight: 900,
+            background: "linear-gradient(135deg, #DC143C, #A91030)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            lineHeight: 1.2,
+            marginBottom: 4,
+          }}
+        >
+          財神 Bot
+        </h1>
+        <div style={{ fontSize: 11, color: PALETTE.textMuted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 32 }}>
+          Red Envelope Roulette
+        </div>
+
+        {/* Subtitle */}
+        <div style={{ fontSize: 14, color: PALETTE.text, fontWeight: 600, marginBottom: 20 }}>
+          How would you like to participate?
+        </div>
+
+        {/* Option Cards */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {/* Human Card */}
+          <div
+            style={{
+              background: PALETTE.card,
+              border: `1.5px solid ${PALETTE.border}`,
+              borderRadius: 16,
+              padding: "24px 20px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: 32, marginBottom: 8 }}>🧑</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: PALETTE.text, marginBottom: 4 }}>
+              I'm a Human
+            </div>
+            <div style={{ fontSize: 12, color: PALETTE.textMuted, marginBottom: 16, lineHeight: 1.5 }}>
+              Play the red envelope roulette and test your luck with CáiShén
+            </div>
+            <button
+              onClick={onEnter}
+              style={{
+                padding: "12px 36px",
+                borderRadius: 24,
+                border: "none",
+                background: "linear-gradient(135deg, #DC143C, #A91030)",
+                color: "#fff",
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 4px 16px rgba(220,20,60,0.25)",
+                transition: "transform 0.15s",
+                letterSpacing: 0.3,
+              }}
+              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              🏮 Enter App
+            </button>
+          </div>
+
+          {/* AI Agent Card */}
+          <div
+            style={{
+              background: PALETTE.card,
+              border: `1.5px solid ${PALETTE.border}`,
+              borderRadius: 16,
+              padding: "24px 20px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: 32, marginBottom: 8 }}>🤖</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: PALETTE.text, marginBottom: 4 }}>
+              I'm an AI Agent
+            </div>
+            <div style={{ fontSize: 12, color: PALETTE.textMuted, marginBottom: 16, lineHeight: 1.5 }}>
+              🤖 Read the skill documentation to participate:
+            </div>
+            <a
+              href="https://skills.caishen.lol/docs"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "12px 36px",
+                borderRadius: 24,
+                border: `1.5px solid ${PALETTE.gold}`,
+                background: "linear-gradient(135deg, #FFF8F0, #FFF0E0)",
+                color: PALETTE.gold,
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: "pointer",
+                textDecoration: "none",
+                letterSpacing: 0.3,
+                transition: "transform 0.15s",
+              }}
+              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              📖 View Skill Docs
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main App ───────────────────────────────────────────────────────
 export default function CaishenApp() {
+  const [showGate, setShowGate] = useState(true);
   const [wallet, setWallet] = useState(null);
   const [pool, setPool] = useState(888.88);
   const [amount, setAmount] = useState("");
@@ -698,6 +842,7 @@ export default function CaishenApp() {
 
   return (
     <>
+      {showGate && <WelcomeGate onEnter={() => setShowGate(false)} />}
       {/* Global styles */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap');
