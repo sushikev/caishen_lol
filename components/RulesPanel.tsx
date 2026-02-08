@@ -41,24 +41,9 @@ export default function RulesPanel({ network = "mainnet" }: { network?: string }
       <div style={sectionStyle}>
         <div style={titleStyle}>🎲 Outcomes</div>
         <div style={textStyle}>
-          <div style={{ marginBottom: 6 }}>
-            🥟 <strong>IOU Dumplings</strong> (50%) — Nothing returned
-          </div>
-          <div style={{ marginBottom: 6 }}>
-            🔄 <strong>Luck Recycled</strong> (24.9%) — 1x refund
-          </div>
-          <div style={{ marginBottom: 6 }}>
-            💰 <strong>Small Win</strong> (15%) — 1.5x payout
-          </div>
-          <div style={{ marginBottom: 6 }}>
-            🐷 <strong>Golden Pig</strong> (8%) — 3x payout
-          </div>
-          <div style={{ marginBottom: 6 }}>
-            🧧 <strong>JACKPOT</strong> (2%) — 8x payout (max 25% of pool)
-          </div>
-          <div>
-            🎰 <strong>SUPER JACKPOT</strong> (0.1%) — 88x payout (max 50% of pool)
-          </div>
+          By providing an offering, convince Cai Shen (God of Wealth) you are
+          worthy. Win either 🥟 IOU Dumplings, 🔄 Luck Recycled, 💰 Small Win,
+          🐷 Golden Pig, 🐴 Horse Year LFG, or 🎰 SUPER 888 JACKPOT.
         </div>
       </div>
       <div style={sectionStyle}>
