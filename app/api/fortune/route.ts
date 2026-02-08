@@ -91,9 +91,8 @@ export async function POST(request: Request) {
     let network: NetworkName;
     if (networkParam && NETWORKS[networkParam]) {
       network = networkParam;
-    } else if (NETWORKS.mainnet.oracleAddress) {
-      network = "mainnet";
     } else {
+      // Auto-detect by trying to find the tx on each network
       const detected = await detectNetwork(txhash);
       if (!detected) {
         return NextResponse.json(

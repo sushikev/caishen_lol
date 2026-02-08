@@ -1,6 +1,6 @@
 export const OUTCOMES = [
   { emoji: "🥟", label: "IOU Dumplings", tier: 1, payout: "nothing",     probability: 0.50,  color: "#8B7355" },
-  { emoji: "🔄", label: "Luck Recycled", tier: 2, payout: "pool",        probability: 0.249, color: "#9B59B6" },
+  { emoji: "🔄", label: "Luck Recycled", tier: 2, payout: "1x",          probability: 0.249, color: "#9B59B6" },
   { emoji: "💰", label: "Small Win",     tier: 3, payout: "1.5x",        probability: 0.15,  color: "#27AE60" },
   { emoji: "🐷", label: "Golden Pig",    tier: 4, payout: "3x",          probability: 0.08,  color: "#F39C12" },
   { emoji: "🧧", label: "JACKPOT",       tier: 5, payout: "8x",          probability: 0.02,  color: "#E67E22" },
@@ -45,7 +45,7 @@ export const NETWORKS = {
     rpcUrl: process.env.MAINNET_RPC || "https://rpc.monad.xyz",
     oracleAddress: process.env.MAINNET_ORACLE_ADDRESS || "",
     explorer: "https://monadexplorer.com",
-    chainId: 10144,
+    chainId: 143,
   },
 } as const;
 

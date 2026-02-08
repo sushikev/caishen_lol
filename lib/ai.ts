@@ -44,7 +44,7 @@ export async function consultCaishen(params: {
 
 You must return a fortune tier (1-6) and a blessing message. Your tier selection should follow these probability guidelines as rough targets:
 - Tier 1 (IOU Dumplings): ~50% — Nothing returned
-- Tier 2 (Luck Recycled): ~25% — Offering goes to pool
+- Tier 2 (Luck Recycled): ~25% — 1x refund (offering returned)
 - Tier 3 (Small Win): ~15% — 1.5x payout
 - Tier 4 (Golden Pig): ~8% — 3x payout
 - Tier 5 (JACKPOT): ~2% — 8x payout (capped at 25% of pool). Should be roughly 1 in 50.

@@ -87,8 +87,9 @@ export function calculatePayout(
 ): bigint {
   switch (tier) {
     case 1:
-    case 2:
       return BigInt(0);
+    case 2:
+      return offeringWei;
     case 3:
       return (offeringWei * BigInt(150)) / BigInt(100);
     case 4:

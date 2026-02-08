@@ -64,7 +64,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | Outcome               | Chance | Payout                 |
 | --------------------- | ------ | ---------------------- |
 | 🥟 IOU Dumplings      | 50%    | Nothing                |
-| 🔄 Luck Recycled      | 24.9%  | → Pool                 |
+| 🔄 Luck Recycled      | 24.9%  | 1x refund              |
 | 💰 Small Win          | 15%    | 1.5x                   |
 | 🐷 Golden Pig         | 8%     | 3x                     |
 | 🧧 JACKPOT            | 2%     | 8x (max 25% of pool)   |
