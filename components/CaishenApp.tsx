@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useAccount, useBalance, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useBalance, useChainId, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { parseEther } from "viem";
 import { OUTCOMES, PALETTE, SUGGESTED_AMOUNTS, HOUSE_WALLET_ADDRESS } from "@/lib/constants";
 import {
@@ -55,6 +55,8 @@ export default function CaishenApp() {
 
   // Wallet hooks
   const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const network = chainId === 10143 ? "testnet" : "mainnet";
   const { data: balanceData } = useBalance({ address });
   const { sendTransaction, data: txHash, isPending: isSending } = useSendTransaction();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
@@ -83,38 +85,49 @@ export default function CaishenApp() {
       const val = pendingAmount;
       setPendingAmount(null);
 
-      // Call the fortune API
-      fetch("/api/fortune", {
+      fetch(`/api/fortune?network=${network}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ txHash, message: wish }),
+        body: JSON.stringify({ txHash, message: wish || "Fortune favors the bold" }),
       })
         .then((res) => res.json())
         .then((data) => {
-          const outcomeIdx = data.outcome as number;
-          const outcome = OUTCOMES[outcomeIdx];
-          let payout = 0;
-
-          if (outcomeIdx === 0) {
-            setPool((p) => p + val * 0.7);
-            payout = 0;
-          } else if (outcomeIdx === 1) {
-            setPool((p) => p + val);
-            payout = 0;
-          } else if (outcomeIdx === 2) {
-            payout = val * 1.5;
-          } else if (outcomeIdx === 3) {
-            payout = val * 3;
-          } else if (outcomeIdx === 4) {
-            payout = Math.min(val * 88, pool * 0.5);
-            setPool((p) => p - payout);
-          }
+          // New API response shape: { caishen: { tier, blessing, outcome }, multiplier, mon_sent, ... }
+          const tier = (data.caishen?.tier ?? 0) as number;
+          // Map tier (1-6) to OUTCOMES index (0-5), tier 0 means error
+          const outcomeIdx = tier > 0 ? tier - 1 : 0;
+          const payout = parseFloat(data.mon_sent || "0");
 
           setRevealing({ outcome: outcomeIdx, payout });
+
+          // Update pool based on outcome
+          if (tier <= 2) {
+            setPool((p) => p + val * 0.7);
+          }
+
           setHistory((h) => [
-            { amount: val, outcome: outcomeIdx, payout, time: Date.now(), txHash },
+            {
+              amount: val,
+              outcome: outcomeIdx,
+              payout,
+              time: Date.now(),
+              txHash,
+              explorerUrl: data.explorer_url,
+              returnTxHash: data.txhash_return,
+            },
             ...h,
           ]);
+
+          // Store blessing for use when reveal finishes
+          if (data.caishen?.blessing) {
+            pendingBlessingRef.current = data.caishen.blessing;
+          }
+          if (data.explorer_url && data.txhash_return) {
+            pendingExplorerRef.current = `${data.explorer_url.split("/tx/")[0]}/tx/${data.txhash_return}`;
+          } else {
+            pendingExplorerRef.current = null;
+          }
+
           setAmount("");
           setWish("");
         })
@@ -130,6 +143,9 @@ export default function CaishenApp() {
   const addMessage = useCallback((text: string, bot = true) => {
     setMessages((prev) => [...prev, { text, bot }]);
   }, []);
+
+  const pendingBlessingRef = useRef<string | null>(null);
+  const pendingExplorerRef = useRef<string | null>(null);
 
   const handleSubmit = () => {
     if (isProcessing || !isConnected) return;
@@ -167,10 +183,6 @@ export default function CaishenApp() {
 
     // Valid! Process
     setIsProcessing(true);
-
-    // Check for penalty conditions
-    const penaltyActive =
-      isTuesday() || isForbiddenDay() || isGhostHour() || isDeathNumber(val);
 
     const eightCount = (String(val).match(/8/g) || []).length;
     const eightComment =
@@ -216,16 +228,33 @@ export default function CaishenApp() {
 
   const handleRevealDone = () => {
     const r = revealing!;
+    const o = OUTCOMES[r.outcome];
 
-    const responses = [
-      `The universe owes you nothing today. These dumplings are redeemable... never. 🥟 Try again, perhaps with more 8s.`,
-      `Your luck has been... recycled. Added to the Celestial Pool (now ${formatMON(pool)} MON). Your sacrifice feeds future fortunes. 🔄`,
-      `Minor Blessing Detected! ${formatMON(r.payout)} MON returned. The universe acknowledges you. Nothing more, nothing less. 💰`,
-      `THE GOLDEN PIG APPEARS! 🐷 ${formatMON(r.payout)} MON rushing to your wallet! Your ancestors are smiling. Your enemies are confused.`,
-      `🎰🎰🎰 天啊! HEAVENS ABOVE! THE DOUBLE 8 FORTUNE HAS MANIFESTED! 88x DIVINE MULTIPLIER! ${formatMON(r.payout)} MON materializing! 發發發! DOUBLE PROSPERITY!`,
-    ];
+    // Use AI-generated blessing if available, otherwise fallback
+    if (pendingBlessingRef.current) {
+      let msg = pendingBlessingRef.current;
+      if (r.payout > 0) {
+        msg += ` (+${formatMON(r.payout)} MON returned)`;
+      }
+      if (pendingExplorerRef.current) {
+        msg += ` 🔗`;
+      }
+      addMessage(msg);
+      pendingBlessingRef.current = null;
+      pendingExplorerRef.current = null;
+    } else {
+      // Fallback responses per tier
+      const responses = [
+        `The universe owes you nothing today. These dumplings are redeemable... never. 🥟 Try again, perhaps with more 8s.`,
+        `Your luck has been... recycled. Added to the Celestial Pool (now ${formatMON(pool)} MON). Your sacrifice feeds future fortunes. 🔄`,
+        `Minor Blessing Detected! ${formatMON(r.payout)} MON returned. The universe acknowledges you. Nothing more, nothing less. 💰`,
+        `THE GOLDEN PIG APPEARS! 🐷 ${formatMON(r.payout)} MON rushing to your wallet! Your ancestors are smiling. Your enemies are confused.`,
+        `🐴 HORSE YEAR LFG! ${formatMON(r.payout)} MON galloping into your wallet! The celestial stallion blesses you! 發發發!`,
+        `🎰🎰🎰 天啊! HEAVENS ABOVE! SUPER 888 JACKPOT! ${formatMON(r.payout)} MON materializing! 發發發! DIVINE PROSPERITY!`,
+      ];
+      addMessage(responses[r.outcome] || responses[0]);
+    }
 
-    addMessage(responses[r.outcome]);
     setRevealing(null);
     setIsProcessing(false);
   };
