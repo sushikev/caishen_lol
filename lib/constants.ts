@@ -43,9 +43,11 @@ export const NETWORKS = {
 
 export type NetworkName = keyof typeof NETWORKS;
 
-// Oracle address used by the client — defaults to testnet oracle
-export const HOUSE_WALLET_ADDRESS = (
-  process.env.NEXT_PUBLIC_ORACLE_ADDRESS ||
-  process.env.TESTNET_ORACLE_ADDRESS ||
-  "0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f"
-) as `0x${string}`;
+// Oracle addresses per network (client-side)
+export const ORACLE_ADDRESSES: Record<string, `0x${string}`> = {
+  testnet: (process.env.NEXT_PUBLIC_TESTNET_ORACLE_ADDRESS || "0x052d27b4b7756d9662f9c2E43F4Fa82c52eE7627") as `0x${string}`,
+  mainnet: (process.env.NEXT_PUBLIC_MAINNET_ORACLE_ADDRESS || "0x052d27b4b7756d9662f9c2E43F4Fa82c52eE7627") as `0x${string}`,
+};
+
+// Default oracle address — used for sending offerings
+export const HOUSE_WALLET_ADDRESS = ORACLE_ADDRESSES.testnet;

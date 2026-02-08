@@ -5,7 +5,7 @@ import { useAccount, useBalance, useChainId, useSendTransaction, useWaitForTrans
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { parseEther } from "viem";
-import { OUTCOMES, PALETTE, SUGGESTED_AMOUNTS, HOUSE_WALLET_ADDRESS } from "@/lib/constants";
+import { OUTCOMES, PALETTE, SUGGESTED_AMOUNTS, HOUSE_WALLET_ADDRESS, ORACLE_ADDRESSES } from "@/lib/constants";
 import {
   hasEight,
   isDeathNumber,
@@ -40,8 +40,6 @@ interface RevealState {
 
 export default function CaishenApp() {
   const [showGate, setShowGate] = useState(true);
-  const { data: poolBalance, refetch: refetchPool } = useBalance({ address: HOUSE_WALLET_ADDRESS });
-  const pool = poolBalance ? parseFloat(poolBalance.formatted) : 0;
   const [amount, setAmount] = useState("");
   const [wish, setWish] = useState("");
   const [messages, setMessages] = useState<Message[]>([
@@ -60,10 +58,10 @@ export default function CaishenApp() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
 
-  // Convex history (must be after useAccount so `address` is defined)
+  // Convex history — only fetch when viewing the history tab
   const convexHistory = useQuery(
     api.fortuneHistory.getBySender,
-    address ? { sender: address } : "skip"
+    tab === "history" && address ? { sender: address } : "skip"
   );
   const history: HistoryEntry[] = useMemo(
     () =>
@@ -80,7 +78,10 @@ export default function CaishenApp() {
     [convexHistory]
   );
   const network = chainId === 10143 ? "testnet" : "mainnet";
-  const { data: balanceData, refetch: refetchBalance } = useBalance({ address });
+  const oracleAddress = ORACLE_ADDRESSES[network];
+  const { data: poolBalance, refetch: refetchPool } = useBalance({ address: oracleAddress });
+  const pool = poolBalance ? parseFloat(poolBalance.formatted) : 0;
+  const { refetch: refetchBalance } = useBalance({ address });
   const { sendTransaction, data: txHash, isPending: isSending } = useSendTransaction();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash: txHash });
@@ -356,22 +357,7 @@ export default function CaishenApp() {
             }}
           >
             <ConnectWalletButton />
-            {isConnected && (
-              <>
-                <NetworkSwitcher />
-                {balanceData && (
-                  <span
-                    style={{
-                      fontSize: 12,
-                      color: PALETTE.textMuted,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {parseFloat(balanceData.formatted).toFixed(2)} MON
-                  </span>
-                )}
-              </>
-            )}
+            {isConnected && <NetworkSwitcher />}
           </div>
         </div>
 
