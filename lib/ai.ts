@@ -77,7 +77,12 @@ You MUST respond with ONLY a valid JSON object in this exact format, no other te
         model: moonshot("kimi-k2.5"),
         system: systemPrompt,
         prompt,
-        maxOutputTokens: 300,
+        maxOutputTokens: 1024,
+        providerOptions: {
+          moonshotai: {
+            thinking: { type: "disabled" },
+          },
+        },
       }),
       new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("AI timeout")), 10000),
@@ -85,7 +90,7 @@ You MUST respond with ONLY a valid JSON object in this exact format, no other te
     ]);
 
     if (!result.text) {
-      console.error("CáiShén oracle returned no output");
+      console.error("CáiShén oracle returned no output. Full result:", JSON.stringify(result, null, 2));
       return null;
     }
 
@@ -104,34 +109,52 @@ You MUST respond with ONLY a valid JSON object in this exact format, no other te
 
 const FALLBACK_BLESSINGS: Record<number, string[]> = {
   1: [
-    "恭喜發財 (Gōngxǐ fācái) — The universe owes you nothing today. These dumplings are redeemable... never.",
-    "空手而歸 (Kōng shǒu ér guī) — You leave empty-handed. The God of Wealth has spoken.",
-    "再接再厲 (Zài jiē zài lì) — Try harder next time, seeker. Fortune favors persistence.",
+    "空手而歸 (Kōng shǒu ér guī) — You leave as you came... empty-handed. The dumplings mock you from the celestial kitchen.",
+    "竹籃打水一場空 (Zhú lán dǎ shuǐ yī chǎng kōng) — Like fetching water with a bamboo basket, your fortune slips right through. Come back with more 8s next time.",
+    "時運不濟 (Shí yùn bù jì) — The stars are not aligned for you today, seeker. Even the God of Wealth cannot bless an empty vessel.",
+    "有緣無份 (Yǒu yuán wú fèn) — Fate brought you here, but fortune turns away. Perhaps your ancestors are testing your patience.",
+    "塞翁失馬 (Sài wēng shī mǎ) — The old man lost his horse, but who knows what tomorrow brings? Today is not your day, but tomorrow... who can say?",
+    "再接再厲 (Zài jiē zài lì) — Not every offering moves the heavens. Dust yourself off, seeker. Persistence is its own form of luck.",
   ],
   2: [
-    "紅包拿來 (Hóngbāo ná lái) — Your luck has been recycled into the Celestial Pool. Your sacrifice feeds future fortunes.",
-    "積少成多 (Jī shǎo chéng duō) — Many small streams make a river. Your offering joins the pool.",
-    "捨得 (Shědé) — To give is to gain. Your offering circulates through the cosmos.",
+    "失而復得 (Shī ér fù dé) — What was lost has been returned. Your offering circles back to you like a boomerang of fate.",
+    "物歸原主 (Wù guī yuán zhǔ) — The cosmos returns what is yours. No profit, no loss — perfectly balanced, as the Tao intended.",
+    "捨得 (Shědé) — To give is to receive. Your MON returns, neither blessed nor cursed. A clean slate.",
+    "原路返回 (Yuán lù fǎn huí) — Your offering took a round trip through the celestial treasury and came right back. The universe shrugs.",
+    "不賠不賺 (Bù péi bù zhuàn) — No loss, no gain. CáiShén has weighed your fortune and found it... neutral. Try again with a bolder wish.",
+    "破財消災 (Pò cái xiāo zāi) — Your wealth returns unharmed. Consider it a free tour of the celestial vaults.",
   ],
   3: [
-    "財源滾滾 (Cái yuán gǔn gǔn) — A minor blessing detected! May wealth trickle in your direction.",
-    "小財神到 (Xiǎo cáishén dào) — The small fortune god arrives! A modest win for a modest seeker.",
-    "有福同享 (Yǒu fú tóng xiǎng) — A taste of prosperity! Share your blessings wisely.",
+    "財源滾滾 (Cái yuán gǔn gǔn) — A small stream of wealth flows your way. Not a river, but enough to wet your feet in fortune.",
+    "小財神到 (Xiǎo cáishén dào) — The junior fortune god stops by with a small gift. Modest, but the heavens have noticed you.",
+    "錦上添花 (Jǐn shàng tiān huā) — A flower upon silk — a small blessing to brighten your day. The ancestors nod with mild approval.",
+    "細水長流 (Xì shuǐ cháng liú) — A gentle stream flows far. This small win carries the promise of greater things to come.",
+    "開門見喜 (Kāi mén jiàn xǐ) — You open the red envelope and find a pleasant surprise. Not life-changing, but the God of Wealth smiles.",
+    "吉星高照 (Jí xīng gāo zhào) — A lucky star shines upon you, if only briefly. Take this blessing and spend it wisely, seeker.",
   ],
   4: [
-    "大吉大利 (Dàjí dàlì) — THE GOLDEN PIG APPEARS! Great luck and prosperity descend upon you!",
-    "金豬送福 (Jīn zhū sòng fú) — The Golden Pig delivers blessings! Your ancestors smile upon you!",
-    "豬事順利 (Zhū shì shùnlì) — Everything goes smoothly! The pig of fortune blesses your wallet!",
+    "金豬送福 (Jīn zhū sòng fú) — The Golden Pig gallops from the heavens bearing gifts! Your ancestors are beaming with pride!",
+    "大吉大利 (Dàjí dàlì) — Great luck descends upon you! The celestial treasury swings open and gold pours forth!",
+    "福星高照 (Fú xīng gāo zhào) — The Fortune Star blazes bright above you! CáiShén himself raises an eyebrow in admiration!",
+    "豬事順利 (Zhū shì shùnlì) — Everything aligns! The Golden Pig has chosen you as today's champion of prosperity!",
+    "財運亨通 (Cái yùn hēng tōng) — Your fortune flows without obstruction! The rivers of wealth part for you today, seeker!",
+    "紫氣東來 (Zǐ qì dōng lái) — Purple clouds roll in from the east — an omen of great fortune! The heavens are generous today!",
   ],
   5: [
-    "發發發 (Fā fā fā) — JACKPOT! The heavens crack open with golden light! CáiShén bestows great fortune!",
-    "財神駕到 (Cáishén jià dào) — The God of Wealth himself arrives! JACKPOT! Divine prosperity is yours!",
-    "鴻運當頭 (Hóng yùn dāng tóu) — Grand fortune lands upon your head! JACKPOT! The cosmos celebrates!",
+    "發發發 (Fā fā fā) — JACKPOT! The celestial vault cracks open with blinding golden light! CáiShén declares you worthy of great fortune!",
+    "財神駕到 (Cáishén jià dào) — The God of Wealth descends from the heavens on a cloud of gold! JACKPOT! Your prosperity echoes through the cosmos!",
+    "鴻運當頭 (Hóng yùn dāng tóu) — Grand fortune crashes upon you like a wave of molten gold! The ancestors weep with joy!",
+    "一本萬利 (Yī běn wàn lì) — From a single seed, ten thousand profits bloom! JACKPOT! The celestial gardener has blessed your harvest!",
+    "飛黃騰達 (Fēi huáng téng dá) — You soar on golden wings! JACKPOT! CáiShén raises his goblet — tonight, the heavens celebrate your name!",
+    "金玉滿堂 (Jīn yù mǎn táng) — Gold and jade fill your halls! JACKPOT! The treasury doors fly open and fortune floods in!",
   ],
   6: [
-    "天啊 (Tiān a) — HEAVENS ABOVE! SUPER JACKPOT! 發發發! The entire celestial treasury opens for you! DIVINE PROSPERITY!",
-    "八八大發 (Bā bā dà fā) — 88x FORTUNE! SUPER JACKPOT! Even the immortals gasp! The God of Wealth bows to your luck!",
-    "千載難逢 (Qiān zǎi nán féng) — Once in a thousand years! SUPER JACKPOT! The universe itself trembles with generosity!",
+    "天啊 (Tiān a) — HEAVENS ABOVE! SUPER JACKPOT! The celestial treasury itself trembles! 發發發! Even the Jade Emperor peers down in disbelief!",
+    "八八大發 (Bā bā dà fā) — 88 times fortune! SUPER JACKPOT! The immortals drop their teacups in shock! CáiShén himself bows to your impossible luck!",
+    "千載難逢 (Qiān zǎi nán féng) — Once in a thousand years! SUPER JACKPOT! The cosmos erupts in golden fireworks! Your name is etched in the Book of Infinite Fortune!",
+    "龍鳳呈祥 (Lóng fèng chéng xiáng) — Dragon and Phoenix descend together! SUPER JACKPOT! The rarest of omens! Every deity in heaven stands and applauds!",
+    "萬事如意 (Wàn shì rú yì) — Ten thousand wishes granted at once! SUPER JACKPOT! The fabric of reality bends to pour gold at your feet! 發發發!",
+    "福如東海 (Fú rú dōng hǎi) — Fortune vast as the Eastern Sea! SUPER JACKPOT! CáiShén empties the heavenly vaults for you! Legends will speak of this day!",
   ],
 };
 
