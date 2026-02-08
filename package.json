@@ -20,7 +20,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "viem": "^2.23.0",
-    "wagmi": "^2.14.0"
+    "wagmi": "^2.14.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^22.13.0",

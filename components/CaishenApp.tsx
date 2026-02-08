@@ -5,7 +5,7 @@ import { useAccount, useBalance, useChainId, useSendTransaction, useWaitForTrans
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { parseEther } from "viem";
-import { OUTCOMES, PALETTE, SUGGESTED_AMOUNTS, HOUSE_WALLET_ADDRESS, ORACLE_ADDRESSES } from "@/lib/constants";
+import { OUTCOMES, PALETTE, SUGGESTED_AMOUNTS, HOUSE_WALLET_ADDRESS, ORACLE_ADDRESSES, MIN_OFFERING } from "@/lib/constants";
 import {
   hasEight,
   isDeathNumber,
@@ -78,6 +78,8 @@ export default function CaishenApp() {
     [convexHistory]
   );
   const network = chainId === 10143 ? "testnet" : "mainnet";
+  const minOffer = MIN_OFFERING[network] ?? 8;
+  const suggestedAmounts = SUGGESTED_AMOUNTS[network] ?? SUGGESTED_AMOUNTS.mainnet;
   const oracleAddress = ORACLE_ADDRESSES[network];
   const { data: poolBalance, refetch: refetchPool } = useBalance({ address: oracleAddress });
   const pool = poolBalance ? parseFloat(poolBalance.formatted) : 0;
@@ -173,9 +175,9 @@ export default function CaishenApp() {
     addMessage(`${val} MON offering${wish ? ` — "${wish}"` : ""}`, false);
 
     // Below minimum
-    if (val < 8) {
+    if (val < minOffer) {
       addMessage(
-        `${val} MON? The minimum offering is 8 MON. You insult me with pocket change? Return when you are serious about prosperity.`
+        `${val} MON? The minimum offering is ${minOffer} MON. You insult me with pocket change? Return when you are serious about prosperity.`
       );
       setAmount("");
       return;
@@ -205,15 +207,15 @@ export default function CaishenApp() {
 
     let penaltyWarning = "";
     if (isForbiddenDay()) {
-      penaltyWarning = ` ⚠️ The ${new Date().getDate()}th... a day haunted by death. Win probabilities halved!`;
+      penaltyWarning = ` ⚠️ The ${new Date().getDate()}th... a day haunted by death. CáiShén's mood darkens!`;
     } else if (isGhostHour()) {
       penaltyWarning =
-        " ⚠️ 4:44... The Ghost Hour dims your fortune. Win probabilities halved!";
+        " ⚠️ 4:44... The Ghost Hour dims your fortune. CáiShén's mood darkens!";
     } else if (isDeathNumber(val)) {
       penaltyWarning =
-        " ⚠️ Multiple 4s... death numbers cloud your luck. Win probabilities halved! ☠️";
+        " ⚠️ Multiple 4s... death numbers cloud your luck. CáiShén's mood darkens! ☠️";
     } else if (isTuesday()) {
-      penaltyWarning = " ⚠️ Tuesday penalty — win probabilities halved!";
+      penaltyWarning = " ⚠️ Tuesday penalty — CáiShén's mood darkens!";
     }
 
     addMessage(
@@ -258,8 +260,8 @@ export default function CaishenApp() {
         `Your luck has been... recycled. Added to the Celestial Pool (now ${formatMON(pool)} MON). Your sacrifice feeds future fortunes. 🔄`,
         `Minor Blessing Detected! ${formatMON(r.payout)} MON returned. The universe acknowledges you. Nothing more, nothing less. 💰`,
         `THE GOLDEN PIG APPEARS! 🐷 ${formatMON(r.payout)} MON rushing to your wallet! Your ancestors are smiling. Your enemies are confused.`,
-        `🐴 HORSE YEAR LFG! ${formatMON(r.payout)} MON galloping into your wallet! The celestial stallion blesses you! 發發發!`,
-        `🎰🎰🎰 天啊! HEAVENS ABOVE! SUPER 888 JACKPOT! ${formatMON(r.payout)} MON materializing! 發發發! DIVINE PROSPERITY!`,
+        `🧧 JACKPOT! ${formatMON(r.payout)} MON raining from the heavens! CáiShén bestows great fortune upon you! 發發發!`,
+        `🎰🎰🎰 天啊! HEAVENS ABOVE! SUPER JACKPOT! ${formatMON(r.payout)} MON materializing! 發發發! DIVINE PROSPERITY!`,
       ];
       addMessage(responses[r.outcome] || responses[0]);
     }
@@ -271,7 +273,7 @@ export default function CaishenApp() {
   const amountValid = (() => {
     const val = parseFloat(amount);
     if (isNaN(val) || val <= 0) return null;
-    if (val < 8) return false;
+    if (val < minOffer) return false;
     if (!hasEight(val)) return false;
     return true;
   })();
@@ -430,7 +432,7 @@ export default function CaishenApp() {
 
           {tab === "rules" && (
             <div style={{ flex: 1, overflowY: "auto", paddingBottom: 16 }}>
-              <RulesPanel />
+              <RulesPanel network={network} />
             </div>
           )}
         </div>
@@ -454,7 +456,7 @@ export default function CaishenApp() {
                 paddingBottom: 2,
               }}
             >
-              {SUGGESTED_AMOUNTS.map((a) => (
+              {suggestedAmounts.map((a) => (
                 <button
                   key={a}
                   onClick={() => setAmount(String(a))}
@@ -606,7 +608,7 @@ export default function CaishenApp() {
                   : isGhostHour()
                   ? "Ghost Hour"
                   : "Tuesday Penalty"}{" "}
-                Active — Win probabilities halved
+                Active — CáiShén&apos;s mood darkens
               </div>
             )}
           </div>

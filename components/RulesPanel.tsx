@@ -1,6 +1,6 @@
 "use client";
 
-import { PALETTE } from "@/lib/constants";
+import { PALETTE, MIN_OFFERING } from "@/lib/constants";
 
 const sectionStyle = {
   background: PALETTE.card,
@@ -26,16 +26,16 @@ const textStyle = {
   lineHeight: 1.6,
 };
 
-export default function RulesPanel() {
+export default function RulesPanel({ network = "mainnet" }: { network?: string }) {
+  const minOffer = MIN_OFFERING[network] ?? 8;
   return (
     <div>
       <div style={sectionStyle}>
         <div style={titleStyle}>🎯 How to Play</div>
         <div style={textStyle}>
-          Send a minimum of <strong>8 $MON</strong> to CaiShen. Your offering
+          Send a minimum of <strong>{minOffer} $MON</strong> to CaiShen. Your offering
           must contain the digit &quot;8&quot; somewhere in the amount. CaiShen
-          will reveal your red envelope&apos;s contents with one of five
-          possible outcomes.
+          will judge your wish and reveal your red envelope&apos;s contents.
         </div>
       </div>
       <div style={sectionStyle}>
@@ -47,21 +47,28 @@ export default function RulesPanel() {
         </div>
       </div>
       <div style={sectionStyle}>
+        <div style={titleStyle}>🙏 Your Wish Matters</div>
+        <div style={textStyle}>
+          CáiShén reads every wish! A sincere, heartfelt wish may please the God
+          of Wealth and improve your fortune. A lazy or rude wish may displease
+          him. Put your heart into it!
+        </div>
+      </div>
+      <div style={sectionStyle}>
         <div style={titleStyle}>⚠️ Superstitions & Forbidden Times</div>
         <div style={textStyle}>
-          <strong>Death Numbers:</strong> Amounts with multiple 4s — Win
-          probabilities are halved.
+          <strong>Death Numbers:</strong> Amounts with multiple 4s —
+          CáiShén&apos;s mood darkens.
           <br />
           <br />
-          <strong>Forbidden Days:</strong> 4th, 14th, 24th of any month — Win
-          probabilities are halved.
+          <strong>Forbidden Days:</strong> 4th, 14th, 24th of any month —
+          CáiShén&apos;s mood darkens.
           <br />
           <br />
-          <strong>Ghost Hour:</strong> 4:44 AM/PM — Win probabilities are
-          halved.
+          <strong>Ghost Hour:</strong> 4:44 AM/PM — CáiShén&apos;s mood darkens.
           <br />
           <br />
-          <strong>Tuesday Penalty:</strong> All win probabilities are halved on
+          <strong>Tuesday Penalty:</strong> CáiShén&apos;s mood darkens on
           Tuesdays.
         </div>
       </div>

@@ -41,111 +41,115 @@ function hasMultipleFours(amountStr: string): boolean {
   return fours >= 2;
 }
 
-export interface FortuneResult {
-  outcome: (typeof OUTCOMES)[number];
-  multiplier: number;
-  penaltiesApplied: string[];
-  penaltyMultiplier: number;
-  blessing: string;
-  hasEight: boolean;
-  minOffering: boolean;
-}
-
 export interface FortuneError {
-  outcome: { emoji: string; label: string; tier: 0; minMult: 0; maxMult: 0 };
+  outcome: { emoji: string; label: string; tier: 0 };
   multiplier: 0;
   message: string;
   blessing: string;
 }
 
-export function calculateFortune(
-  amountWei: string,
-  txhash: string,
-  message: string,
-): FortuneResult | FortuneError {
+export interface PenaltyResult {
+  penalties: string[];
+  penaltyMultiplier: number;
+}
+
+export function detectPenalties(amountWei: string): PenaltyResult {
   const amountMon = Number(amountWei) / 1e18;
   const amountStr = amountMon.toString();
 
-  const hasEightDigit = containsEight(amountStr);
-  const minOffering = amountMon >= 8;
+  let penalty = 1.0;
+  const penalties: string[] = [];
 
-  if (!minOffering) {
+  if (hasMultipleFours(amountStr)) {
+    penalty *= 0.5;
+    penalties.push("Death Numbers (multiple 4s)");
+  }
+  if (isForbiddenDay()) {
+    penalty *= 0.5;
+    penalties.push("Forbidden Day (4th/14th/24th)");
+  }
+  if (isGhostHour()) {
+    penalty *= 0.5;
+    penalties.push("Ghost Hour (4:44)");
+  }
+  if (isTuesday()) {
+    penalty *= 0.5;
+    penalties.push("Tuesday Penalty");
+  }
+
+  return { penalties, penaltyMultiplier: penalty };
+}
+
+export function calculatePayout(
+  tier: number,
+  offeringWei: bigint,
+  poolBalanceWei: bigint,
+): bigint {
+  switch (tier) {
+    case 1:
+    case 2:
+      return BigInt(0);
+    case 3:
+      return (offeringWei * BigInt(150)) / BigInt(100);
+    case 4:
+      return (offeringWei * BigInt(300)) / BigInt(100);
+    case 5:
+      return bigintMin((offeringWei * BigInt(800)) / BigInt(100), poolBalanceWei / BigInt(4));
+    case 6:
+      return bigintMin((offeringWei * BigInt(8800)) / BigInt(100), poolBalanceWei / BigInt(2));
+    default:
+      return BigInt(0);
+  }
+}
+
+function bigintMin(a: bigint, b: bigint): bigint {
+  return a < b ? a : b;
+}
+
+export function fallbackTierSelection(
+  txhash: string,
+  message: string,
+  penaltyMultiplier: number,
+): number {
+  const msgHash = crypto.createHash("sha256").update(txhash + message).digest("hex");
+  const entropy = parseInt(msgHash.substring(0, 8), 16) / 0xffffffff;
+
+  const adjustedEntropy = entropy * penaltyMultiplier;
+
+  let selectedTier = OUTCOMES[OUTCOMES.length - 1].tier;
+  let cumulative = 0;
+  for (const outcome of OUTCOMES) {
+    cumulative += outcome.probability;
+    if (adjustedEntropy <= cumulative) {
+      selectedTier = outcome.tier;
+      break;
+    }
+  }
+
+  return selectedTier;
+}
+
+export function validateOffering(amountWei: string, minOffering: number = 8): FortuneError | null {
+  const amountMon = Number(amountWei) / 1e18;
+  const amountStr = amountMon.toString();
+
+  if (amountMon < minOffering) {
     return {
-      outcome: { emoji: "⛔", label: "Offering Too Small", tier: 0, minMult: 0, maxMult: 0 },
+      outcome: { emoji: "\u26D4", label: "Offering Too Small", tier: 0 },
       multiplier: 0,
-      message: "CáiShén requires a minimum offering of 8 $MON",
-      blessing: "恭喜發財 - Wishing you prosperity (try again with 8+ MON)",
+      message: `CáiShén requires a minimum offering of ${minOffering} $MON`,
+      blessing: `恭喜發財 - Wishing you prosperity (try again with ${minOffering}+ MON)`,
     };
   }
 
-  if (!hasEightDigit) {
+  if (!containsEight(amountStr)) {
     return {
-      outcome: { emoji: "⛔", label: "Missing Lucky 8", tier: 0, minMult: 0, maxMult: 0 },
+      outcome: { emoji: "\u26D4", label: "Missing Lucky 8", tier: 0 },
       multiplier: 0,
       message: "Your offering must contain the digit '8' to please CáiShén",
       blessing: "八 (bā) sounds like 發 (fā) - prosperity requires 8!",
     };
   }
 
-  // Calculate base luck from txhash + message entropy
-  const msgHash = crypto.createHash("sha256").update(txhash + message).digest("hex");
-  const entropy = parseInt(msgHash.substring(0, 8), 16) / 0xffffffff;
-
-  // Apply superstition penalties
-  let penalty = 1.0;
-  const penaltiesApplied: string[] = [];
-
-  if (hasMultipleFours(amountStr)) {
-    penalty *= 0.5;
-    penaltiesApplied.push("Death Numbers (multiple 4s)");
-  }
-  if (isForbiddenDay()) {
-    penalty *= 0.5;
-    penaltiesApplied.push("Forbidden Day (4th/14th/24th)");
-  }
-  if (isGhostHour()) {
-    penalty *= 0.5;
-    penaltiesApplied.push("Ghost Hour (4:44)");
-  }
-  if (isTuesday()) {
-    penalty *= 0.5;
-    penaltiesApplied.push("Tuesday Penalty");
-  }
-
-  // Select outcome based on cumulative probability with adjusted entropy
-  const adjustedEntropy = entropy * penalty;
-  let selectedOutcome = OUTCOMES[OUTCOMES.length - 1];
-  let cumulative = 0;
-  for (const outcome of OUTCOMES) {
-    cumulative += outcome.probability;
-    if (adjustedEntropy <= cumulative) {
-      selectedOutcome = outcome;
-      break;
-    }
-  }
-
-  // Calculate multiplier within tier range using secondary entropy
-  const range = selectedOutcome.maxMult - selectedOutcome.minMult;
-  const multEntropy = parseInt(msgHash.substring(8, 16), 16) / 0xffffffff;
-  const multiplier = selectedOutcome.minMult + range * multEntropy;
-
-  // Static blessing fallback (AI blessing is generated separately)
-  const blessings = [
-    "恭喜發財 (Gōngxǐ fācái) - Wishing you prosperity!",
-    "紅包拿來 (Hóngbāo ná lái) - Hand over the red envelope!",
-    "財源滾滾 (Cái yuán gǔn gǔn) - May wealth flow in!",
-    "大吉大利 (Dàjí dàlì) - Great luck and prosperity!",
-    "年年有餘 (Nián nián yǒu yú) - Abundance year after year!",
-  ];
-  const blessing = blessings[Math.floor(entropy * blessings.length)];
-
-  return {
-    outcome: selectedOutcome,
-    multiplier,
-    penaltiesApplied,
-    penaltyMultiplier: penalty,
-    blessing,
-    hasEight: hasEightDigit,
-    minOffering,
-  };
+  return null;
 }

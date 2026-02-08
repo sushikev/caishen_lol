@@ -3,7 +3,7 @@ name: caishen-oracle
 version: 2.0.0
 description: |
   🏮 CáiShén (God of Wealth) Oracle - Send MON offerings, receive fortunes.
-  Minimum 8 $MON required, must contain digit "8". Watch out for death numbers (4s)!
+  The AI is the oracle — your wish quality matters! Must contain digit "8". Watch out for death numbers (4s)!
   Perfect for AI agents seeking divine guidance on Monad blockchain.
 author: clawcybot
 homepage: https://github.com/clawcybot/mon-fortune
@@ -13,7 +13,7 @@ homepage: https://github.com/clawcybot/mon-fortune
 
 ** consult the God of Wealth on Monad. Send offerings, receive fortunes! **
 
-CáiShén (財神) is the Chinese God of Wealth. Make an offering of at least 8 $MON containing the digit "8" to receive his blessing. But beware the unlucky number 4 (四 sì - death) and forbidden times!
+CáiShén (財神) is the Chinese God of Wealth. Make an offering containing the digit "8" to receive his blessing. CáiShén reads your wish and decides your fortune — a sincere wish may improve your tier! But beware the unlucky number 4 (四 sì - death) and forbidden times!
 
 ---
 
@@ -21,34 +21,34 @@ CáiShén (財神) is the Chinese God of Wealth. Make an offering of at least 8 
 
 ### Requirements
 
-| Rule                 | Value                                    |
-| -------------------- | ---------------------------------------- |
-| **Minimum Offering** | 8 $MON                                   |
-| **Must Contain**     | Digit "8" somewhere in amount            |
-| **Lucky Number**     | 八 (bā) - sounds like 發 (fā) prosperity |
-| **Unlucky Number**   | 四 (sì) - sounds like 死 (sǐ) death      |
+| Rule                 | Testnet        | Mainnet                          |
+| -------------------- | -------------- | -------------------------------- |
+| **Minimum Offering** | 0.08 $MON      | 8 $MON                           |
+| **Must Contain**     | Digit "8"      | Digit "8"                        |
+| **Lucky Number**     | 八 (bā) - sounds like 發 (fā) prosperity | |
+| **Unlucky Number**   | 四 (sì) - sounds like 死 (sǐ) death      | |
 
 ### 🎲 Outcomes
 
-| Outcome               | Chance | Payout              |
-| --------------------- | ------ | ------------------- |
-| 🥟 IOU Dumplings      | 50%    | Nothing             |
-| 🔄 Luck Recycled      | 24.9%  | → Pool              |
-| 💰 Small Win          | 15%    | 1.5x                |
-| 🐷 Golden Pig         | 8%     | 3x                  |
-| 🧧 JACKPOT            | 2%     | Entire Pool         |
-| 🎰 SUPER JACKPOT      | 0.1%   | 88x (max 50% pool)  |
+| Outcome               | Chance | Payout                 |
+| --------------------- | ------ | ---------------------- |
+| 🥟 IOU Dumplings      | 50%    | Nothing                |
+| 🔄 Luck Recycled      | 24.9%  | → Pool                 |
+| 💰 Small Win          | 15%    | 1.5x                   |
+| 🐷 Golden Pig         | 8%     | 3x                     |
+| 🧧 JACKPOT            | 2%     | 8x (max 25% of pool)   |
+| 🎰 SUPER JACKPOT      | 0.1%   | 88x (max 50% of pool)  |
 
 ### ⚠️ Superstitions & Forbidden Times
 
-| Penalty           | Condition                | Effect       |
-| ----------------- | ------------------------ | ------------ |
-| 💀 Death Numbers  | Multiple 4s in amount    | Win prob ÷ 2 |
-| 📅 Forbidden Days | 4th, 14th, 24th of month | Win prob ÷ 2 |
-| 👻 Ghost Hour     | 4:44 AM/PM               | Win prob ÷ 2 |
-| 📆 Tuesday        | Any Tuesday              | Win prob ÷ 2 |
+| Penalty           | Condition                | Effect                    |
+| ----------------- | ------------------------ | ------------------------- |
+| 💀 Death Numbers  | Multiple 4s in amount    | CáiShén's mood darkens    |
+| 📅 Forbidden Days | 4th, 14th, 24th of month | CáiShén's mood darkens    |
+| 👻 Ghost Hour     | 4:44 AM/PM               | CáiShén's mood darkens    |
+| 📆 Tuesday        | Any Tuesday              | CáiShén's mood darkens    |
 
-**Penalties stack!** Multiple penalties = multiple divisions.
+**Penalties stack!** Multiple penalties push CáiShén toward lower tiers.
 
 ---
 
@@ -58,7 +58,7 @@ CáiShén (財神) is the Chinese God of Wealth. Make an offering of at least 8 
 | ------------------- | -------------------------------------------- | ------------------------- |
 | **CáiShén Address** | `0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f` | _Coming soon_             |
 | **RPC**             | `https://testnet-rpc.monad.xyz`              | `https://rpc.monad.xyz`   |
-| **Min Offering**    | 8 MON                                        | 8 MON                     |
+| **Min Offering**    | 0.08 MON                                     | 8 MON                     |
 | **Must Include**    | Digit "8"                                    | Digit "8"                 |
 | **Explorer**        | https://testnet.monadexplorer.com            | https://monadexplorer.com |
 
@@ -77,14 +77,16 @@ curl -X POST https://agents.devnads.com/v1/faucet \
 ### Step 2: Make Offering to CáiShén
 
 ```bash
-# Offering of 8.88 MON (lucky!)
+# Testnet offering of 0.88 MON (lucky!)
 cast send 0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f \
-  --value 8.88ether \
+  --value 0.88ether \
   --rpc-url https://testnet-rpc.monad.xyz \
   --private-key $PRIVATE_KEY
 ```
 
-**Lucky amounts:** 8, 8.8, 8.88, 18, 28, 80, 88, 888...
+**Lucky amounts (testnet):** 0.08, 0.18, 0.28, 0.88, 1.88, 8.88...
+
+**Lucky amounts (mainnet):** 8, 18, 28, 88, 188, 888...
 
 **Avoid:** 4, 4.4, 14, 24, 40, 44, 444... (death numbers)
 
@@ -138,7 +140,7 @@ Consult CáiShén for your fortune.
     "has_eight": true,
     "min_offering_met": true
   },
-  "multiplier": 88,
+  "multiplier": 6,
   "mon_received": "8.88",
   "mon_sent": "781.44",
   "txhash_return": "0xdef...",

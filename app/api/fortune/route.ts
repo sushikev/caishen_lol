@@ -7,9 +7,17 @@ import {
   type Hex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { NETWORKS, type NetworkName } from "@/lib/constants";
-import { calculateFortune, isForbiddenDay, isGhostHour, isTuesday } from "@/lib/game-logic";
-import { generateBlessing } from "@/lib/ai";
+import { NETWORKS, OUTCOMES, MIN_OFFERING, type NetworkName } from "@/lib/constants";
+import {
+  detectPenalties,
+  calculatePayout,
+  fallbackTierSelection,
+  validateOffering,
+  isForbiddenDay,
+  isGhostHour,
+  isTuesday,
+} from "@/lib/game-logic";
+import { consultCaishen, getFallbackBlessing } from "@/lib/ai";
 import { getConvexClient } from "@/lib/convex";
 import { api } from "@/convex/_generated/api";
 
@@ -147,23 +155,21 @@ export async function POST(request: Request) {
       network,
     });
 
-    // Calculate fortune
-    const fortune = calculateFortune(tx.value.toString(), txhash, message);
-
-    // Check if it's an error result (tier 0)
-    if (fortune.outcome.tier === 0) {
-      // Insert history for tier-0 results
+    // Validate offering (min offering per network, must contain 8)
+    const minOffer = MIN_OFFERING[network] ?? 8;
+    const offeringError = validateOffering(tx.value.toString(), minOffer);
+    if (offeringError) {
       try {
         await convex.mutation(api.fortuneHistory.insertResult, {
           sender: tx.from,
           txHash: txhash,
           network,
           amount: formatEther(tx.value),
-          outcome: `${fortune.outcome.emoji} ${fortune.outcome.label}`,
+          outcome: `${offeringError.outcome.emoji} ${offeringError.outcome.label}`,
           tier: 0,
           multiplier: 0,
           monSent: "0",
-          blessing: fortune.blessing,
+          blessing: offeringError.blessing,
           returnTxHash: null,
           returnStatus: "no_return",
           penalties: [],
@@ -178,9 +184,9 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: false,
         caishen: {
-          outcome: `${fortune.outcome.emoji} ${fortune.outcome.label}`,
+          outcome: `${offeringError.outcome.emoji} ${offeringError.outcome.label}`,
           tier: 0,
-          blessing: fortune.blessing,
+          blessing: offeringError.blessing,
         },
         offering: {
           amount: formatEther(tx.value),
@@ -206,37 +212,46 @@ export async function POST(request: Request) {
       });
     }
 
-    // Valid fortune result — generate AI blessing
-    const fortuneResult = fortune as {
-      outcome: { emoji: string; label: string; tier: number; minMult: number; maxMult: number };
-      multiplier: number;
-      penaltiesApplied: string[];
-      penaltyMultiplier: number;
-      blessing: string;
-      hasEight: boolean;
-      minOffering: boolean;
-    };
+    // Detect superstition penalties
+    const { penalties, penaltyMultiplier } = detectPenalties(tx.value.toString());
 
-    const aiBlessing = await generateBlessing(
-      `${fortuneResult.outcome.emoji} ${fortuneResult.outcome.label}`,
-      fortuneResult.outcome.tier,
-      fortuneResult.multiplier,
-      formatEther(tx.value),
-      fortuneResult.penaltiesApplied,
-    );
+    // Fetch oracle wallet (pool) balance
+    const oracleAddress = walletClient?.account.address || (config.oracleAddress as `0x${string}`);
+    const poolBalance = await publicClient.getBalance({ address: oracleAddress });
 
-    // Calculate return amount using BigInt math
-    const returnAmount =
-      fortuneResult.multiplier > 0
-        ? (tx.value * BigInt(Math.floor(fortuneResult.multiplier * 100))) / BigInt(100)
-        : BigInt(0);
+    // Consult CáiShén AI oracle
+    let tier: number;
+    let blessing: string;
+
+    const aiResult = await consultCaishen({
+      offering: formatEther(tx.value),
+      wish: message,
+      penalties,
+      penaltyMultiplier,
+      poolBalance: formatEther(poolBalance),
+    });
+
+    if (aiResult) {
+      tier = aiResult.tier;
+      blessing = aiResult.blessing;
+    } else {
+      // Fallback to deterministic hash-based tier selection
+      tier = fallbackTierSelection(txhash, message, penaltyMultiplier);
+      blessing = getFallbackBlessing(tier);
+    }
+
+    // Calculate fixed payout based on tier
+    const returnAmount = calculatePayout(tier, tx.value, poolBalance);
+
+    // Get outcome info
+    const outcome = OUTCOMES[tier - 1];
 
     // Send MON payback
     let returnTxHash: string | null = null;
     let returnStatus = "pending";
 
     try {
-      if (returnAmount > 0 && walletClient) {
+      if (returnAmount > BigInt(0) && walletClient) {
         const hash = await walletClient.sendTransaction({
           to: tx.from,
           value: returnAmount,
@@ -262,15 +277,15 @@ export async function POST(request: Request) {
         txHash: txhash,
         network,
         amount: formatEther(tx.value),
-        outcome: `${fortuneResult.outcome.emoji} ${fortuneResult.outcome.label}`,
-        tier: fortuneResult.outcome.tier,
-        multiplier: fortuneResult.multiplier,
+        outcome: `${outcome.emoji} ${outcome.label}`,
+        tier,
+        multiplier: tier,
         monSent: formatEther(returnAmount),
-        blessing: aiBlessing,
+        blessing,
         returnTxHash,
         returnStatus,
-        penalties: fortuneResult.penaltiesApplied,
-        penaltyMultiplier: fortuneResult.penaltyMultiplier,
+        penalties,
+        penaltyMultiplier,
         explorerUrl: `${config.explorer}/tx/${txhash}`,
         timestamp: Date.now(),
       });
@@ -281,23 +296,23 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       caishen: {
-        outcome: `${fortuneResult.outcome.emoji} ${fortuneResult.outcome.label}`,
-        tier: fortuneResult.outcome.tier,
-        blessing: aiBlessing,
+        outcome: `${outcome.emoji} ${outcome.label}`,
+        tier,
+        blessing,
       },
       offering: {
         amount: formatEther(tx.value),
-        has_eight: fortuneResult.hasEight,
-        min_offering_met: fortuneResult.minOffering,
+        has_eight: true,
+        min_offering_met: true,
       },
-      multiplier: fortuneResult.multiplier,
+      multiplier: tier,
       mon_received: formatEther(tx.value),
       mon_sent: formatEther(returnAmount),
       txhash_return: returnTxHash,
       return_status: returnStatus,
       superstitions: {
-        penalties_applied: fortuneResult.penaltiesApplied,
-        penalty_multiplier: fortuneResult.penaltyMultiplier,
+        penalties_applied: penalties,
+        penalty_multiplier: penaltyMultiplier,
         is_forbidden_day: isForbiddenDay(),
         is_ghost_hour: isGhostHour(),
         is_tuesday: isTuesday(),

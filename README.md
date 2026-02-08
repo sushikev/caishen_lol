@@ -2,7 +2,7 @@
 
 **Red Envelope Roulette AI Agent on Monad Blockchain**
 
-> Consult the Chinese God of Wealth. Make an offering of at least 8 $MON containing the digit "8" to receive CáiShén's blessing. But beware the unlucky number 4 and forbidden times!
+> Consult the Chinese God of Wealth. Make an offering containing the digit "8" to receive CáiShén's blessing. The AI *is* the oracle — your wish quality matters! But beware the unlucky number 4 and forbidden times!
 
 Built for **Moltiverse Hackathon** — Agent + Token Track.
 
@@ -10,7 +10,7 @@ Built for **Moltiverse Hackathon** — Agent + Token Track.
 
 ## Overview
 
-CáiShén Bot is a blockchain-based red envelope roulette game where the Chinese God of Wealth dispenses fortune through sacred red envelopes. Players send offerings containing the lucky number 8 and receive randomized outcomes.
+CáiShén Bot is a blockchain-based red envelope roulette game where the Chinese God of Wealth dispenses fortune through sacred red envelopes. Players send offerings containing the lucky number 8 and a wish — CáiShén (powered by Kimi AI) reads the wish and decides their fortune tier.
 
 ## Quick Start
 
@@ -26,10 +26,11 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Features
 
 - 🧧 Interactive red envelope reveal animations
-- 🤖 AI-generated blessings via Kimi 2.5 (Moonshot AI)
+- 🤖 AI-as-oracle via Kimi (Moonshot AI) — decides fortune tier + generates blessing
+- 🙏 Wish quality influences outcome (sincere = nudge up, lazy = nudge down)
 - ⛓️ On-chain transaction verification and MON payback
 - 💬 Chat interface with CáiShén persona
-- 🎲 Six deterministic outcome tiers based on tx entropy
+- 🎲 Six outcome tiers with fixed payouts (deterministic fallback if AI unavailable)
 - 📜 Play history tracking with explorer links
 - 🏮 Cultural superstition enforcement (forbidden days, death numbers, ghost hour)
 - 📱 Mobile-first responsive design
@@ -41,7 +42,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - **Next.js 16** + React 19
 - **RainbowKit** + **wagmi** + **viem** — wallet connection & blockchain interaction
-- **Vercel AI SDK** + **Kimi 2.5** (Moonshot AI) — contextual AI-generated blessings
+- **Vercel AI SDK** + **Kimi** (Moonshot AI) + **Zod** — AI oracle with structured output
 - Pure CSS animations
 - Google Fonts: Noto Serif SC + DM Sans
 
@@ -51,32 +52,32 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Rules
 
-| Requirement          | Value                        |
-| -------------------- | ---------------------------- |
-| **Minimum Offering** | 8 $MON                       |
-| **Must Contain**     | Digit "8" in the amount      |
-| **Lucky Number**     | 八 (bā) — prosperity (發 fā) |
-| **Unlucky Number**   | 四 (sì) — death (死 sǐ)      |
+| Requirement          | Testnet        | Mainnet              |
+| -------------------- | -------------- | -------------------- |
+| **Minimum Offering** | 0.08 $MON      | 8 $MON               |
+| **Must Contain**     | Digit "8"      | Digit "8"            |
+| **Lucky Number**     | 八 (bā) — prosperity (發 fā) | |
+| **Unlucky Number**   | 四 (sì) — death (死 sǐ)      | |
 
 ### Six Possible Outcomes
 
-| Outcome               | Chance | Payout              |
-| --------------------- | ------ | ------------------- |
-| 🥟 IOU Dumplings      | 50%    | Nothing             |
-| 🔄 Luck Recycled      | 24.9%  | → Pool              |
-| 💰 Small Win          | 15%    | 1.5x                |
-| 🐷 Golden Pig         | 8%     | 3x                  |
-| 🧧 JACKPOT            | 2%     | Entire Pool         |
-| 🎰 SUPER JACKPOT      | 0.1%   | 88x (max 50% pool)  |
+| Outcome               | Chance | Payout                 |
+| --------------------- | ------ | ---------------------- |
+| 🥟 IOU Dumplings      | 50%    | Nothing                |
+| 🔄 Luck Recycled      | 24.9%  | → Pool                 |
+| 💰 Small Win          | 15%    | 1.5x                   |
+| 🐷 Golden Pig         | 8%     | 3x                     |
+| 🧧 JACKPOT            | 2%     | 8x (max 25% of pool)   |
+| 🎰 SUPER JACKPOT      | 0.1%   | 88x (max 50% of pool)  |
 
 ### Superstitions (Penalties)
 
-- 💀 **Death Numbers**: Multiple 4s in amount → probabilities halved
-- 📅 **Forbidden Days**: 4th, 14th, 24th → probabilities halved
-- 👻 **Ghost Hour**: 4:44 AM/PM → probabilities halved
-- 📆 **Tuesday**: All Tuesdays → probabilities halved
+- 💀 **Death Numbers**: Multiple 4s in amount → CáiShén's mood darkens
+- 📅 **Forbidden Days**: 4th, 14th, 24th → CáiShén's mood darkens
+- 👻 **Ghost Hour**: 4:44 AM/PM → CáiShén's mood darkens
+- 📆 **Tuesday**: All Tuesdays → CáiShén's mood darkens
 
-Penalties stack multiplicatively.
+Penalties stack! Multiple penalties push CáiShén toward lower tiers.
 
 ---
 
@@ -84,7 +85,7 @@ Penalties stack multiplicatively.
 
 ### `POST /api/fortune?network={testnet|mainnet}`
 
-Submit a transaction hash to receive a fortune outcome. The server verifies the tx on-chain, calculates a deterministic outcome from tx entropy, generates an AI blessing, and sends MON payback.
+Submit a transaction hash to receive a fortune outcome. The server verifies the tx on-chain, consults CáiShén AI (who decides the tier based on wish quality, penalties, and probability guidelines), calculates the fixed payout, and sends MON payback.
 
 **Request:**
 
@@ -105,14 +106,14 @@ curl -X POST "http://localhost:3000/api/fortune?network=testnet" \
   "caishen": {
     "outcome": "🎰 SUPER JACKPOT",
     "tier": 6,
-    "blessing": "AI-generated blessing from Kimi 2.5..."
+    "blessing": "AI-generated blessing from CáiShén..."
   },
   "offering": {
     "amount": "8.88",
     "has_eight": true,
     "min_offering_met": true
   },
-  "multiplier": 88,
+  "multiplier": 6,
   "mon_received": "8.88",
   "mon_sent": "781.44",
   "txhash_return": "0x...",
@@ -177,7 +178,7 @@ console.log(fortune.caishen.blessing); // AI-generated blessing
 | `ORACLE_PRIVATE_KEY`                   | Yes      | Private key for oracle wallet (sends payouts) |
 | `TESTNET_ORACLE_ADDRESS`               | Yes      | Oracle address on testnet                     |
 | `MAINNET_ORACLE_ADDRESS`               | No       | Oracle address on mainnet                     |
-| `MOONSHOT_API_KEY`                     | Yes      | Kimi 2.5 API key from Moonshot AI             |
+| `MOONSHOT_API_KEY`                     | No       | Kimi API key from Moonshot AI (falls back to deterministic if absent) |
 
 ---
 
@@ -209,8 +210,8 @@ caishen_lol/
 │   └── ...
 ├── lib/
 │   ├── constants.ts           # Outcomes, networks, palette
-│   ├── game-logic.ts          # Fortune calculation, superstitions
-│   └── ai.ts                  # Kimi 2.5 AI blessing generation
+│   ├── game-logic.ts          # Penalties, payout calc, fallback tier selection
+│   └── ai.ts                  # CáiShén AI oracle (consultCaishen + fallback blessings)
 ├── .env.local
 └── README.md
 ```
