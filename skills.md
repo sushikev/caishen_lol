@@ -30,14 +30,14 @@ CáiShén (財神) is the Chinese God of Wealth. Make an offering of at least 8 
 
 ### 🎲 Outcomes
 
-| Outcome              | Tier | Multiplier   | Probability |
-| -------------------- | ---- | ------------ | ----------- |
-| 🥟 IOU Dumplings     | 1    | 0.1x - 0.5x  | 40%         |
-| 🔄 Luck Recycled     | 2    | 0.5x - 0.8x  | 30%         |
-| 💰 Small Win         | 3    | 0.8x - 1.2x  | 15%         |
-| 🐷 Golden Pig        | 4    | 1.2x - 2.0x  | 10%         |
-| 🐴 Horse Year LFG    | 5    | 2.0x - 3.0x  | 4%          |
-| 🎰 SUPER 888 JACKPOT | 6    | 3.0x - 8.88x | 1%          |
+| Outcome               | Chance | Payout              |
+| --------------------- | ------ | ------------------- |
+| 🥟 IOU Dumplings      | 50%    | Nothing             |
+| 🔄 Luck Recycled      | 24.9%  | → Pool              |
+| 💰 Small Win          | 15%    | 1.5x                |
+| 🐷 Golden Pig         | 8%     | 3x                  |
+| 🧧 JACKPOT            | 2%     | Entire Pool         |
+| 🎰 SUPER JACKPOT      | 0.1%   | 88x (max 50% pool)  |
 
 ### ⚠️ Superstitions & Forbidden Times
 
@@ -129,7 +129,7 @@ Consult CáiShén for your fortune.
 {
   "success": true,
   "caishen": {
-    "outcome": "🎰 SUPER 888 JACKPOT",
+    "outcome": "🎰 SUPER JACKPOT",
     "tier": 6,
     "blessing": "恭喜發財 (Gōngxǐ fācái) - Wishing you prosperity!"
   },
@@ -138,9 +138,9 @@ Consult CáiShén for your fortune.
     "has_eight": true,
     "min_offering_met": true
   },
-  "multiplier": 5.55,
+  "multiplier": 88,
   "mon_received": "8.88",
-  "mon_sent": "49.28",
+  "mon_sent": "781.44",
   "txhash_return": "0xdef...",
   "return_status": "confirmed",
   "superstitions": {

@@ -60,14 +60,14 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Six Possible Outcomes
 
-| Outcome              | Return     | Probability |
-| -------------------- | ---------- | ----------- |
-| 🥟 IOU Dumplings     | 0.1x–0.5x  | 40%         |
-| 🔄 Luck Recycled     | 0.5x–0.8x  | 30%         |
-| 💰 Small Win         | 0.8x–1.2x  | 15%         |
-| 🐷 Golden Pig        | 1.2x–2.0x  | 10%         |
-| 🐴 Horse Year LFG    | 2.0x–3.0x  | 4%          |
-| 🎰 SUPER 888 JACKPOT | 3.0x–8.88x | 1%          |
+| Outcome               | Chance | Payout              |
+| --------------------- | ------ | ------------------- |
+| 🥟 IOU Dumplings      | 50%    | Nothing             |
+| 🔄 Luck Recycled      | 24.9%  | → Pool              |
+| 💰 Small Win          | 15%    | 1.5x                |
+| 🐷 Golden Pig         | 8%     | 3x                  |
+| 🧧 JACKPOT            | 2%     | Entire Pool         |
+| 🎰 SUPER JACKPOT      | 0.1%   | 88x (max 50% pool)  |
 
 ### Superstitions (Penalties)
 
@@ -103,7 +103,7 @@ curl -X POST "http://localhost:3000/api/fortune?network=testnet" \
 {
   "success": true,
   "caishen": {
-    "outcome": "🎰 SUPER 888 JACKPOT",
+    "outcome": "🎰 SUPER JACKPOT",
     "tier": 6,
     "blessing": "AI-generated blessing from Kimi 2.5..."
   },
@@ -112,9 +112,9 @@ curl -X POST "http://localhost:3000/api/fortune?network=testnet" \
     "has_eight": true,
     "min_offering_met": true
   },
-  "multiplier": 5.55,
+  "multiplier": 88,
   "mon_received": "8.88",
-  "mon_sent": "49.28",
+  "mon_sent": "781.44",
   "txhash_return": "0x...",
   "return_status": "confirmed",
   "superstitions": {
@@ -163,7 +163,7 @@ const response = await fetch(
 );
 
 const fortune = await response.json();
-console.log(fortune.caishen.outcome); // "🎰 SUPER 888 JACKPOT"
+console.log(fortune.caishen.outcome); // "🎰 SUPER JACKPOT"
 console.log(fortune.caishen.blessing); // AI-generated blessing
 ```
 

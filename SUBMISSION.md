@@ -26,14 +26,14 @@ CáiShén Bot (財神 Bot) is an AI-powered fortune agent inspired by the Chines
 
 ## Fortune Tiers
 
-| Tier | Outcome           | Multiplier Range |
-| ---- | ----------------- | ---------------- |
-| 1    | Wooden Dumplings  | 0x (loss)        |
-| 2    | Recycled Luck     | 0x (pool)        |
-| 3    | Minor Blessing    | 1.08–1.88x       |
-| 4    | Golden Pig        | 2.88–5.88x       |
-| 5    | Horse Year LFG    | 6.88–12.88x      |
-| 6    | SUPER 888 JACKPOT | 18.88–88.88x     |
+| Outcome               | Chance | Payout              |
+| --------------------- | ------ | ------------------- |
+| 🥟 IOU Dumplings      | 50%    | Nothing             |
+| 🔄 Luck Recycled      | 24.9%  | → Pool              |
+| 💰 Small Win          | 15%    | 1.5x                |
+| 🐷 Golden Pig         | 8%     | 3x                  |
+| 🧧 JACKPOT            | 2%     | Entire Pool         |
+| 🎰 SUPER JACKPOT      | 0.1%   | 88x (max 50% pool)  |
 
 ## Tech Stack
 
