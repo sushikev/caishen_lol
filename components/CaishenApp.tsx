@@ -36,6 +36,7 @@ interface Message {
 interface RevealState {
   outcome: number;
   payout: number;
+  loading?: boolean;
 }
 
 export default function CaishenApp() {
@@ -111,10 +112,19 @@ export default function CaishenApp() {
       const val = pendingAmount;
       setPendingAmount(null);
 
+      // Show bot confirmation now that tx is confirmed
+      if (pendingCommentRef.current) {
+        addMessage(pendingCommentRef.current);
+        pendingCommentRef.current = null;
+      }
+
+      // Show loading red packet immediately
+      setRevealing({ outcome: 0, payout: 0, loading: true });
+
       fetch(`/api/fortune?network=${network}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ txHash, message: wish || "Fortune favors the bold" }),
+        body: JSON.stringify({ txHash, message: pendingWishRef.current }),
       })
         .then((res) => res.json())
         .then((data) => {
@@ -136,14 +146,12 @@ export default function CaishenApp() {
             pendingExplorerRef.current = null;
           }
 
-          setAmount("");
-          setWish("");
-
           // Refresh balances after fortune processing
           refetchBalance();
           refetchPool();
         })
         .catch(() => {
+          setRevealing(null);
           addMessage(
             "The celestial connection was disrupted... Please try again. 🌩️"
           );
@@ -158,6 +166,8 @@ export default function CaishenApp() {
 
   const pendingBlessingRef = useRef<string | null>(null);
   const pendingExplorerRef = useRef<string | null>(null);
+  const pendingCommentRef = useRef<string | null>(null);
+  const pendingWishRef = useRef<string>("");
 
   const handleSubmit = () => {
     if (isProcessing || !isConnected) return;
@@ -171,11 +181,9 @@ export default function CaishenApp() {
       return;
     }
 
-    // Add user message
-    addMessage(`${val} MON offering${wish ? ` — "${wish}"` : ""}`, false);
-
     // Below minimum
     if (val < minOffer) {
+      addMessage(`${val} MON offering${wish ? ` — "${wish}"` : ""}`, false);
       addMessage(
         `${val} MON? The minimum offering is ${minOffer} MON. You insult me with pocket change? Return when you are serious about prosperity.`
       );
@@ -185,6 +193,7 @@ export default function CaishenApp() {
 
     // No 8
     if (!hasEight(val)) {
+      addMessage(`${val} MON offering${wish ? ` — "${wish}"` : ""}`, false);
       addMessage(
         `${val} MON? Not a single 8 in sight. Do you come to the God of Wealth with this energy? Payment returned minus 0.04 MON rudeness fee. The 4 is intentional. 😤`
       );
@@ -218,9 +227,16 @@ export default function CaishenApp() {
       penaltyWarning = " ⚠️ Tuesday penalty — CáiShén's mood darkens!";
     }
 
-    addMessage(
-      `${val} MON received. ${eightComment}${penaltyWarning} Sending your offering to the Celestial Treasury... 🧧`
-    );
+    // Store bot commentary for after tx confirms
+    pendingCommentRef.current = `${val} MON received. ${eightComment}${penaltyWarning} Sending your offering to the Celestial Treasury... 🧧`;
+    pendingWishRef.current = wish || "Fortune favors the bold";
+
+    // Clear chat and show fresh user message
+    setMessages([
+      { text: `${val} MON offering${wish ? ` — "${wish}"` : ""}`, bot: false },
+    ]);
+    setAmount("");
+    setWish("");
 
     // Send real MON transaction
     setPendingAmount(val);
@@ -234,8 +250,12 @@ export default function CaishenApp() {
   useEffect(() => {
     if (!isSending && !isConfirming && pendingAmount !== null && !isConfirmed && !txHash) {
       // Transaction was rejected or failed
+      setPendingAmount(null);
+      pendingCommentRef.current = null;
+      setIsProcessing(false);
+      addMessage("Transaction cancelled. The God of Wealth awaits your return. 🏮");
     }
-  }, [isSending, isConfirming, pendingAmount, isConfirmed, txHash]);
+  }, [isSending, isConfirming, pendingAmount, isConfirmed, txHash]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRevealDone = () => {
     const r = revealing!;
@@ -620,6 +640,7 @@ export default function CaishenApp() {
         <EnvelopeReveal
           outcome={revealing.outcome}
           payout={revealing.payout}
+          loading={revealing.loading}
           onDone={handleRevealDone}
         />
       )}

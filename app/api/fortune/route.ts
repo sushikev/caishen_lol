@@ -221,6 +221,7 @@ export async function POST(request: Request) {
     // Consult CáiShén AI oracle
     let tier: number;
     let blessing: string;
+    let oracleSource: "ai" | "fallback";
 
     const aiResult = await consultCaishen({
       offering: formatEther(tx.value),
@@ -233,10 +234,12 @@ export async function POST(request: Request) {
     if (aiResult) {
       tier = aiResult.tier;
       blessing = aiResult.blessing;
+      oracleSource = "ai";
     } else {
       // Fallback to deterministic hash-based tier selection
       tier = fallbackTierSelection(txhash, message, penaltyMultiplier);
       blessing = getFallbackBlessing(tier);
+      oracleSource = "fallback";
     }
 
     // Calculate fixed payout based on tier
@@ -298,6 +301,7 @@ export async function POST(request: Request) {
         outcome: `${outcome.emoji} ${outcome.label}`,
         tier,
         blessing,
+        oracle_source: oracleSource,
       },
       offering: {
         amount: formatEther(tx.value),

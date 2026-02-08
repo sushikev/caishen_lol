@@ -1,10 +1,8 @@
-import { generateObject } from "ai";
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { generateText } from "ai";
+import { createMoonshotAI } from "@ai-sdk/moonshotai";
 import { z } from "zod";
 
-const moonshot = createOpenAICompatible({
-  name: "moonshot",
-  baseURL: "https://api.moonshot.cn/v1",
+const moonshot = createMoonshotAI({
   apiKey: process.env.MOONSHOT_API_KEY || "",
 });
 
@@ -68,13 +66,15 @@ ${penaltyContext}
 
 Current Celestial Pool balance: ${params.poolBalance} MON.
 
-Decide their fortune tier (1-6) and deliver your divine blessing.`;
+Decide their fortune tier (1-6) and deliver your divine blessing.
+
+You MUST respond with ONLY a valid JSON object in this exact format, no other text:
+{"tier": <number 1-6>, "blessing": "<your blessing message>"}`;
 
   try {
     const result = await Promise.race([
-      generateObject({
-        model: moonshot.chatModel("moonshot-v1-8k"),
-        schema: caishenSchema,
+      generateText({
+        model: moonshot("kimi-k2.5"),
         system: systemPrompt,
         prompt,
         maxOutputTokens: 300,
@@ -84,7 +84,18 @@ Decide their fortune tier (1-6) and deliver your divine blessing.`;
       ),
     ]);
 
-    return result.object;
+    if (!result.text) {
+      console.error("CáiShén oracle returned no output");
+      return null;
+    }
+
+    const jsonMatch = result.text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("CáiShén oracle returned non-JSON:", result.text);
+      return null;
+    }
+
+    return caishenSchema.parse(JSON.parse(jsonMatch[0]));
   } catch (error) {
     console.error("CáiShén oracle failed:", error);
     return null;

@@ -1,31 +1,59 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { OUTCOMES } from "@/lib/constants";
 import { formatMON } from "@/lib/game-logic";
 
 export default function EnvelopeReveal({
   outcome,
   payout,
+  loading = false,
   onDone,
 }: {
   outcome: number;
   payout: number;
+  loading?: boolean;
   onDone: () => void;
 }) {
   const [phase, setPhase] = useState(0); // 0=envelope, 1=opening, 2=revealed
+  const wasLoading = useRef(loading);
 
+  // Loading mode: alternate between pulse (0) and shake (1)
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 800);
-    const t2 = setTimeout(() => setPhase(2), 2200);
-    const t3 = setTimeout(onDone, 3800);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
+    if (!loading) return;
+    wasLoading.current = true;
+    const interval = setInterval(() => {
+      setPhase((prev) => (prev === 0 ? 1 : 0));
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  // Reveal sequence
+  useEffect(() => {
+    if (loading) return;
+
+    if (wasLoading.current) {
+      // Transition from loading → reveal (faster since user already waited)
+      setPhase(1);
+      const t1 = setTimeout(() => setPhase(2), 1000);
+      const t2 = setTimeout(onDone, 2600);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    } else {
+      // Original behavior (no loading phase)
+      const t1 = setTimeout(() => setPhase(1), 800);
+      const t2 = setTimeout(() => setPhase(2), 2200);
+      const t3 = setTimeout(onDone, 3800);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+      };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loading]);
 
   const o = OUTCOMES[outcome];
 
@@ -78,7 +106,13 @@ export default function EnvelopeReveal({
                 letterSpacing: 1,
               }}
             >
-              {phase === 0 ? "CAISHEN DECIDES..." : "OPENING..."}
+              {loading
+              ? phase === 0
+                ? "CONSULTING ORACLE..."
+                : "CAISHEN DECIDES..."
+              : phase === 0
+              ? "CAISHEN DECIDES..."
+              : "OPENING..."}
             </div>
             {/* Gold seal */}
             <div
