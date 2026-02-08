@@ -26,6 +26,7 @@ import RulesPanel from "./RulesPanel";
 import EnvelopeReveal from "./EnvelopeReveal";
 import WelcomeGate from "./WelcomeGate";
 import ConnectWalletButton from "./ConnectWalletButton";
+import NetworkSwitcher from "./NetworkSwitcher";
 
 interface Message {
   text: string;
@@ -39,7 +40,8 @@ interface RevealState {
 
 export default function CaishenApp() {
   const [showGate, setShowGate] = useState(true);
-  const [pool, setPool] = useState(888.88);
+  const { data: poolBalance, refetch: refetchPool } = useBalance({ address: HOUSE_WALLET_ADDRESS });
+  const pool = poolBalance ? parseFloat(poolBalance.formatted) : 0;
   const [amount, setAmount] = useState("");
   const [wish, setWish] = useState("");
   const [messages, setMessages] = useState<Message[]>([
@@ -48,6 +50,17 @@ export default function CaishenApp() {
       bot: true,
     },
   ]);
+  const [tab, setTab] = useState<TabId>("play");
+  const [revealing, setRevealing] = useState<RevealState | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [pendingAmount, setPendingAmount] = useState<number | null>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
+
+  // Wallet hooks
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+
+  // Convex history (must be after useAccount so `address` is defined)
   const convexHistory = useQuery(
     api.fortuneHistory.getBySender,
     address ? { sender: address } : "skip"
@@ -66,17 +79,8 @@ export default function CaishenApp() {
       })),
     [convexHistory]
   );
-  const [tab, setTab] = useState<TabId>("play");
-  const [revealing, setRevealing] = useState<RevealState | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [pendingAmount, setPendingAmount] = useState<number | null>(null);
-  const chatRef = useRef<HTMLDivElement>(null);
-
-  // Wallet hooks
-  const { address, isConnected } = useAccount();
-  const chainId = useChainId();
   const network = chainId === 10143 ? "testnet" : "mainnet";
-  const { data: balanceData } = useBalance({ address });
+  const { data: balanceData, refetch: refetchBalance } = useBalance({ address });
   const { sendTransaction, data: txHash, isPending: isSending } = useSendTransaction();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash: txHash });
@@ -119,11 +123,6 @@ export default function CaishenApp() {
 
           setRevealing({ outcome: outcomeIdx, payout });
 
-          // Update pool based on outcome
-          if (tier <= 2) {
-            setPool((p) => p + val * 0.7);
-          }
-
           // Store blessing for use when reveal finishes
           if (data.caishen?.blessing) {
             pendingBlessingRef.current = data.caishen.blessing;
@@ -136,6 +135,10 @@ export default function CaishenApp() {
 
           setAmount("");
           setWish("");
+
+          // Refresh balances after fortune processing
+          refetchBalance();
+          refetchPool();
         })
         .catch(() => {
           addMessage(
@@ -182,7 +185,6 @@ export default function CaishenApp() {
       addMessage(
         `${val} MON? Not a single 8 in sight. Do you come to the God of Wealth with this energy? Payment returned minus 0.04 MON rudeness fee. The 4 is intentional. 😤`
       );
-      setPool((p) => p + 0.04);
       setAmount("");
       return;
     }
@@ -354,16 +356,21 @@ export default function CaishenApp() {
             }}
           >
             <ConnectWalletButton />
-            {isConnected && balanceData && (
-              <span
-                style={{
-                  fontSize: 12,
-                  color: PALETTE.textMuted,
-                  fontWeight: 600,
-                }}
-              >
-                {parseFloat(balanceData.formatted).toFixed(2)} MON
-              </span>
+            {isConnected && (
+              <>
+                <NetworkSwitcher />
+                {balanceData && (
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: PALETTE.textMuted,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {parseFloat(balanceData.formatted).toFixed(2)} MON
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>
