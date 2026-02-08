@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useAccount, useBalance, useChainId, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { parseEther } from "viem";
 import { OUTCOMES, PALETTE, SUGGESTED_AMOUNTS, HOUSE_WALLET_ADDRESS } from "@/lib/constants";
 import {
@@ -46,7 +48,24 @@ export default function CaishenApp() {
       bot: true,
     },
   ]);
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const convexHistory = useQuery(
+    api.fortuneHistory.getBySender,
+    address ? { sender: address } : "skip"
+  );
+  const history: HistoryEntry[] = useMemo(
+    () =>
+      (convexHistory ?? []).map((entry) => ({
+        sender: entry.sender,
+        amount: parseFloat(entry.amount),
+        outcome: entry.tier > 0 ? entry.tier - 1 : 0,
+        payout: parseFloat(entry.monSent),
+        time: entry.timestamp,
+        txHash: entry.txHash,
+        explorerUrl: entry.explorerUrl,
+        returnTxHash: entry.returnTxHash ?? undefined,
+      })),
+    [convexHistory]
+  );
   const [tab, setTab] = useState<TabId>("play");
   const [revealing, setRevealing] = useState<RevealState | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -104,19 +123,6 @@ export default function CaishenApp() {
           if (tier <= 2) {
             setPool((p) => p + val * 0.7);
           }
-
-          setHistory((h) => [
-            {
-              amount: val,
-              outcome: outcomeIdx,
-              payout,
-              time: Date.now(),
-              txHash,
-              explorerUrl: data.explorer_url,
-              returnTxHash: data.txhash_return,
-            },
-            ...h,
-          ]);
 
           // Store blessing for use when reveal finishes
           if (data.caishen?.blessing) {
@@ -400,7 +406,17 @@ export default function CaishenApp() {
 
           {tab === "history" && (
             <div style={{ flex: 1, overflowY: "auto", paddingBottom: 16 }}>
-              {history.length === 0 ? (
+              {convexHistory === undefined ? (
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "48px 20px",
+                    color: PALETTE.textMuted,
+                  }}
+                >
+                  <div style={{ fontSize: 14 }}>Loading history...</div>
+                </div>
+              ) : history.length === 0 ? (
                 <div
                   style={{
                     textAlign: "center",

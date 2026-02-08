@@ -10,21 +10,8 @@ import { privateKeyToAccount } from "viem/accounts";
 import { NETWORKS, type NetworkName } from "@/lib/constants";
 import { calculateFortune, isForbiddenDay, isGhostHour, isTuesday } from "@/lib/game-logic";
 import { generateBlessing } from "@/lib/ai";
-
-// Track processed transactions per network (replay protection)
-const processedTxs: Record<string, Set<string>> = {
-  testnet: new Set(),
-  mainnet: new Set(),
-};
-
-// Periodic cleanup to prevent memory bloat
-setInterval(() => {
-  for (const network of Object.keys(processedTxs)) {
-    if (processedTxs[network].size > 10000) {
-      processedTxs[network].clear();
-    }
-  }
-}, 3600000);
+import { getConvexClient } from "@/lib/convex";
+import { api } from "@/convex/_generated/api";
 
 function getClients(network: NetworkName) {
   const config = NETWORKS[network];
@@ -121,8 +108,12 @@ export async function POST(request: Request) {
 
     const { publicClient, walletClient } = clients;
 
-    // Replay protection
-    if (processedTxs[network].has(txhash.toLowerCase())) {
+    // Replay protection via Convex
+    const convex = getConvexClient();
+    const alreadyProcessed = await convex.query(api.processedTxs.isProcessed, {
+      txHash: txhash.toLowerCase(),
+    });
+    if (alreadyProcessed) {
       return NextResponse.json(
         { error: "Already processed" },
         { status: 400 },
@@ -150,14 +141,40 @@ export async function POST(request: Request) {
       );
     }
 
-    // Mark as processed
-    processedTxs[network].add(txhash.toLowerCase());
+    // Mark as processed in Convex
+    await convex.mutation(api.processedTxs.markProcessed, {
+      txHash: txhash.toLowerCase(),
+      network,
+    });
 
     // Calculate fortune
     const fortune = calculateFortune(tx.value.toString(), txhash, message);
 
     // Check if it's an error result (tier 0)
     if (fortune.outcome.tier === 0) {
+      // Insert history for tier-0 results
+      try {
+        await convex.mutation(api.fortuneHistory.insertResult, {
+          sender: tx.from,
+          txHash: txhash,
+          network,
+          amount: formatEther(tx.value),
+          outcome: `${fortune.outcome.emoji} ${fortune.outcome.label}`,
+          tier: 0,
+          multiplier: 0,
+          monSent: "0",
+          blessing: fortune.blessing,
+          returnTxHash: null,
+          returnStatus: "no_return",
+          penalties: [],
+          penaltyMultiplier: 1,
+          explorerUrl: `${config.explorer}/tx/${txhash}`,
+          timestamp: Date.now(),
+        });
+      } catch (e) {
+        console.error("Failed to insert fortune history:", e);
+      }
+
       return NextResponse.json({
         success: false,
         caishen: {
@@ -236,6 +253,29 @@ export async function POST(request: Request) {
     } catch (e) {
       console.error("Return tx failed:", e);
       returnStatus = "failed";
+    }
+
+    // Insert fortune history into Convex
+    try {
+      await convex.mutation(api.fortuneHistory.insertResult, {
+        sender: tx.from,
+        txHash: txhash,
+        network,
+        amount: formatEther(tx.value),
+        outcome: `${fortuneResult.outcome.emoji} ${fortuneResult.outcome.label}`,
+        tier: fortuneResult.outcome.tier,
+        multiplier: fortuneResult.multiplier,
+        monSent: formatEther(returnAmount),
+        blessing: aiBlessing,
+        returnTxHash,
+        returnStatus,
+        penalties: fortuneResult.penaltiesApplied,
+        penaltyMultiplier: fortuneResult.penaltyMultiplier,
+        explorerUrl: `${config.explorer}/tx/${txhash}`,
+        timestamp: Date.now(),
+      });
+    } catch (e) {
+      console.error("Failed to insert fortune history:", e);
     }
 
     return NextResponse.json({

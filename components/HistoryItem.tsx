@@ -4,11 +4,14 @@ import { OUTCOMES, PALETTE } from "@/lib/constants";
 import { formatMON } from "@/lib/game-logic";
 
 export interface HistoryEntry {
+  sender: string;
   amount: number;
   outcome: number;
   payout: number;
   time: number;
   txHash?: string;
+  explorerUrl?: string;
+  returnTxHash?: string;
 }
 
 export default function HistoryItem({ entry }: { entry: HistoryEntry }) {
