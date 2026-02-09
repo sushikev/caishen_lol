@@ -103,6 +103,7 @@ export async function POST(request: Request) {
     // Determine network from query param or auto-detect
     const url = new URL(request.url);
     const networkParam = url.searchParams.get("network") as NetworkName | null;
+    const useFallback = url.searchParams.get("fallback") === "true";
 
     let network: NetworkName;
     if (networkParam && NETWORKS[networkParam]) {
@@ -316,7 +317,7 @@ export async function POST(request: Request) {
     let blessing: string;
     let oracleSource: "ai" | "fallback";
 
-    const aiResult = await consultCaishen({
+    const aiResult = useFallback ? null : await consultCaishen({
       offering: formatEther(tx.value),
       wish: message,
       penalties,

@@ -123,7 +123,8 @@ export default function CaishenApp() {
       // Show loading red packet immediately
       setRevealing({ outcome: 0, payout: 0, loading: true });
 
-      fetch(`/api/fortune?network=${network}`, {
+      const fallback = process.env.NODE_ENV === "development" ? "&fallback=true" : "";
+      fetch(`/api/fortune?network=${network}${fallback}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ txHash, message: pendingWishRef.current }),
@@ -230,11 +231,11 @@ export default function CaishenApp() {
     }
 
     pendingCommentRef.current = null;
-    pendingWishRef.current = wish || "Fortune favors the bold";
+    pendingWishRef.current = wish || "Gong Xi Fa Cai! Heng Ong Huat!";
 
     // Clear chat and show fresh user message
     setMessages([
-      { text: wish || "Fortune favors the bold", bot: false, footer: `${val} MON offering` },
+      { text: wish || "Gong Xi Fa Cai! Heng Ong Huat!", bot: false, footer: `${val} MON offering` },
     ]);
     setAmount("");
     setWish("");
