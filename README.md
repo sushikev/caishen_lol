@@ -28,6 +28,7 @@ Open [http://localhost:3000](http://localhost:3000).
 - 🧧 Interactive red envelope reveal animations
 - 🤖 AI-as-oracle via Kimi (Moonshot AI) — decides fortune tier + generates blessing
 - 🙏 Wish quality influences outcome (sincere = nudge up, lazy = nudge down)
+- 💰 Juice system — send FORTUNE_TOKEN to earn extra divine favor from CáiShén
 - ⛓️ On-chain transaction verification and MON payback
 - 💬 Chat interface with CáiShén persona
 - 🎲 Six outcome tiers with fixed payouts (deterministic fallback if AI unavailable)
@@ -63,12 +64,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Outcome               | Chance | Payout                 |
 | --------------------- | ------ | ---------------------- |
-| 🥟 IOU Dumplings      | 50%    | Nothing                |
-| 🔄 Luck Recycled      | 24.9%  | 1x refund              |
-| 💰 Small Win          | 15%    | 1.5x                   |
-| 🐷 Golden Pig         | 8%     | 3x                     |
-| 🧧 JACKPOT            | 2%     | 8x (max 25% of pool)   |
-| 🎰 SUPER JACKPOT      | 0.1%   | 88x (max 50% of pool)  |
+| 🥟 IOU Dumplings      | ~50%   | Nothing                |
+| 🔄 Luck Recycled      | ~25%   | 1x refund              |
+| 💰 Small Win          | ~16%   | 1.5x                   |
+| 🐷 Golden Pig         | ~8%    | 3x                     |
+| 🧧 JACKPOT            | ~0.8%  | 8x (max 10% of pool)   |
+| 🎰 SUPER JACKPOT      | ~0.08% | 88x (max 50% of pool)  |
 
 ### Superstitions (Penalties)
 
@@ -78,6 +79,19 @@ Open [http://localhost:3000](http://localhost:3000).
 - 📆 **Tuesday**: All Tuesdays → CáiShén's mood darkens
 
 Penalties stack! Multiple penalties push CáiShén toward lower tiers.
+
+### Juice (FORTUNE_TOKEN Extra Favor)
+
+Agents can send FORTUNE_TOKEN to "juice" CáiShén — earning extra divine favor. When juice is present, the AI oracle knows the seeker has shown extra devotion and is more likely to grant a higher fortune. This is **probabilistic, not guaranteed** — CáiShén factors the juice into his decision but remains a capricious god.
+
+| FORTUNE_TOKEN Sent | Juice Level | Label        |
+| ------------------ | ----------- | ------------ |
+| 100,000+           | 4           | Mega Juice   |
+| 10,000+            | 3           | Large Juice  |
+| 1,000+             | 2           | Medium Juice |
+| 100+               | 1           | Small Juice  |
+
+Juice can push up to tier 5 (JACKPOT) but **never** tier 6 (SUPER JACKPOT). See [skills.md](./skills.md) for full API details and examples.
 
 ---
 
@@ -94,9 +108,12 @@ curl -X POST "http://localhost:3000/api/fortune?network=testnet" \
   -H "Content-Type: application/json" \
   -d '{
     "txHash": "0xYOUR_TX_HASH",
-    "message": "Should I deploy today?"
+    "message": "Should I deploy today?",
+    "juiceTxHash": "0xJUICE_TX_HASH"
   }'
 ```
+
+`juiceTxHash` is optional — omit it for a standard fortune without juice.
 
 **Response:**
 
@@ -104,8 +121,8 @@ curl -X POST "http://localhost:3000/api/fortune?network=testnet" \
 {
   "success": true,
   "caishen": {
-    "outcome": "🎰 SUPER JACKPOT",
-    "tier": 6,
+    "outcome": "🧧 JACKPOT",
+    "tier": 5,
     "blessing": "AI-generated blessing from CáiShén..."
   },
   "offering": {
@@ -113,14 +130,22 @@ curl -X POST "http://localhost:3000/api/fortune?network=testnet" \
     "has_eight": true,
     "min_offering_met": true
   },
-  "multiplier": 6,
+  "multiplier": 5,
   "mon_received": "8.88",
-  "mon_sent": "781.44",
+  "mon_sent": "71.04",
   "txhash_return": "0x...",
   "return_status": "confirmed",
   "superstitions": {
     "penalties_applied": ["Tuesday Penalty"],
     "penalty_multiplier": 0.5
+  },
+  "juice": {
+    "juice_tx_hash": "0x...",
+    "token_amount": "1000.0",
+    "rerolls": 2,
+    "juice_label": "Medium Juice",
+    "base_tier": 5,
+    "boosted_tier": 5
   },
   "network": "testnet",
   "sender": "0x...",

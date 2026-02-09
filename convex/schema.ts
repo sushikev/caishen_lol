@@ -24,5 +24,8 @@ export default defineSchema({
     penaltyMultiplier: v.number(),
     explorerUrl: v.string(),
     timestamp: v.number(),
+    juiceTxHash: v.optional(v.union(v.string(), v.null())),
+    juiceAmount: v.optional(v.string()),
+    juiceRerolls: v.optional(v.number()),
   }).index("by_sender", ["sender"]),
 });

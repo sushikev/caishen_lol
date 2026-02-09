@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { OUTCOMES } from "./constants";
+import { OUTCOMES, JUICE_TIERS, JUICE_MAX_TIER } from "./constants";
 
 export function hasEight(val: string | number): boolean {
   return String(val).includes("8");
@@ -95,7 +95,7 @@ export function calculatePayout(
     case 4:
       return (offeringWei * BigInt(300)) / BigInt(100);
     case 5:
-      return bigintMin((offeringWei * BigInt(800)) / BigInt(100), poolBalanceWei / BigInt(4));
+      return bigintMin((offeringWei * BigInt(800)) / BigInt(100), poolBalanceWei / BigInt(10));
     case 6:
       return bigintMin((offeringWei * BigInt(8800)) / BigInt(100), poolBalanceWei / BigInt(2));
     default:
@@ -128,6 +128,32 @@ export function fallbackTierSelection(
   }
 
   return selectedTier;
+}
+
+export function calculateJuiceRerolls(tokenAmountRaw: bigint): { rerolls: number; label: string } {
+  // tokenAmountRaw is in token wei (18 decimals) — convert to whole tokens
+  const wholeTokens = tokenAmountRaw / BigInt(10 ** 18);
+  for (const tier of JUICE_TIERS) {
+    if (wholeTokens >= BigInt(tier.minTokens)) {
+      return { rerolls: tier.rerolls, label: tier.label };
+    }
+  }
+  return { rerolls: 0, label: "" };
+}
+
+export function applyJuiceRerolls(
+  baseTier: number,
+  rerolls: number,
+  txhash: string,
+  message: string,
+  penaltyMultiplier: number,
+): number {
+  let best = baseTier;
+  for (let i = 0; i < rerolls; i++) {
+    const roll = fallbackTierSelection(txhash, message + `_juice_${i}`, penaltyMultiplier);
+    if (roll > best) best = roll;
+  }
+  return Math.min(JUICE_MAX_TIER, best);
 }
 
 export function validateOffering(amountWei: string, minOffering: number = 8): FortuneError | null {

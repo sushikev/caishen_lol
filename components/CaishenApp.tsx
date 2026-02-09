@@ -31,6 +31,7 @@ import NetworkSwitcher from "./NetworkSwitcher";
 interface Message {
   text: string;
   bot: boolean;
+  footer?: string;
 }
 
 interface RevealState {
@@ -160,8 +161,8 @@ export default function CaishenApp() {
     }
   }, [isConfirmed, txHash]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const addMessage = useCallback((text: string, bot = true) => {
-    setMessages((prev) => [...prev, { text, bot }]);
+  const addMessage = useCallback((text: string, bot = true, footer?: string) => {
+    setMessages((prev) => [...prev, { text, bot, footer }]);
   }, []);
 
   const pendingBlessingRef = useRef<string | null>(null);
@@ -183,7 +184,7 @@ export default function CaishenApp() {
 
     // Below minimum
     if (val < minOffer) {
-      addMessage(`${val} MON offering${wish ? ` — "${wish}"` : ""}`, false);
+      addMessage(wish || `${val} MON offering`, false, `${val} MON offering`);
       addMessage(
         `${val} MON? The minimum offering is ${minOffer} MON. You insult me with pocket change? Return when you are serious about prosperity.`
       );
@@ -193,7 +194,7 @@ export default function CaishenApp() {
 
     // No 8
     if (!hasEight(val)) {
-      addMessage(`${val} MON offering${wish ? ` — "${wish}"` : ""}`, false);
+      addMessage(wish || `${val} MON offering`, false, `${val} MON offering`);
       addMessage(
         `${val} MON? Not a single 8 in sight. Do you come to the God of Wealth with this energy? Payment returned minus 0.04 MON rudeness fee. The 4 is intentional. 😤`
       );
@@ -227,13 +228,12 @@ export default function CaishenApp() {
       penaltyWarning = " ⚠️ Tuesday penalty — CáiShén's mood darkens!";
     }
 
-    // Store bot commentary for after tx confirms
-    pendingCommentRef.current = `${val} MON received. ${eightComment}${penaltyWarning} Sending your offering to the Celestial Treasury... 🧧`;
+    pendingCommentRef.current = null;
     pendingWishRef.current = wish || "Fortune favors the bold";
 
     // Clear chat and show fresh user message
     setMessages([
-      { text: `${val} MON offering${wish ? ` — "${wish}"` : ""}`, bot: false },
+      { text: wish || "Fortune favors the bold", bot: false, footer: `${val} MON offering` },
     ]);
     setAmount("");
     setWish("");
@@ -261,16 +261,12 @@ export default function CaishenApp() {
     const r = revealing!;
     const o = OUTCOMES[r.outcome];
 
+    // Build footer with payout info
+    const payoutFooter = r.payout > 0 ? `+${formatMON(r.payout)} MON returned` : undefined;
+
     // Use AI-generated blessing if available, otherwise fallback
     if (pendingBlessingRef.current) {
-      let msg = pendingBlessingRef.current;
-      if (r.payout > 0) {
-        msg += ` (+${formatMON(r.payout)} MON returned)`;
-      }
-      if (pendingExplorerRef.current) {
-        msg += ` 🔗`;
-      }
-      addMessage(msg);
+      addMessage(pendingBlessingRef.current, true, payoutFooter);
       pendingBlessingRef.current = null;
       pendingExplorerRef.current = null;
     } else {
@@ -278,12 +274,12 @@ export default function CaishenApp() {
       const responses = [
         `The universe owes you nothing today. These dumplings are redeemable... never. 🥟 Try again, perhaps with more 8s.`,
         `Your luck has been... recycled. Added to the Celestial Pool (now ${formatMON(pool)} MON). Your sacrifice feeds future fortunes. 🔄`,
-        `Minor Blessing Detected! ${formatMON(r.payout)} MON returned. The universe acknowledges you. Nothing more, nothing less. 💰`,
-        `THE GOLDEN PIG APPEARS! 🐷 ${formatMON(r.payout)} MON rushing to your wallet! Your ancestors are smiling. Your enemies are confused.`,
-        `🧧 JACKPOT! ${formatMON(r.payout)} MON raining from the heavens! CáiShén bestows great fortune upon you! 發發發!`,
-        `🎰🎰🎰 天啊! HEAVENS ABOVE! SUPER JACKPOT! ${formatMON(r.payout)} MON materializing! 發發發! DIVINE PROSPERITY!`,
+        `Minor Blessing Detected! The universe acknowledges you. Nothing more, nothing less. 💰`,
+        `THE GOLDEN PIG APPEARS! 🐷 Your ancestors are smiling. Your enemies are confused.`,
+        `🧧 JACKPOT! CáiShén bestows great fortune upon you! 發發發!`,
+        `🎰🎰🎰 天啊! HEAVENS ABOVE! SUPER JACKPOT! 發發發! DIVINE PROSPERITY!`,
       ];
-      addMessage(responses[r.outcome] || responses[0]);
+      addMessage(responses[r.outcome] || responses[0], true, payoutFooter);
     }
 
     setRevealing(null);
@@ -414,7 +410,7 @@ export default function CaishenApp() {
               }}
             >
               {messages.map((m, i) => (
-                <ChatMessage key={i} message={m.text} isBot={m.bot} />
+                <ChatMessage key={i} message={m.text} isBot={m.bot} footer={m.footer} />
               ))}
             </div>
           )}

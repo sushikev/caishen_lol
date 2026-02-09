@@ -5,9 +5,11 @@ import { PALETTE } from "@/lib/constants";
 export default function ChatMessage({
   message,
   isBot,
+  footer,
 }: {
   message: string;
   isBot: boolean;
+  footer?: string;
 }) {
   return (
     <div
@@ -57,6 +59,18 @@ export default function ChatMessage({
         }}
       >
         {message}
+        {footer && (
+          <div
+            style={{
+              marginTop: 6,
+              fontSize: 11,
+              color: isBot ? PALETTE.textMuted : "rgba(255,255,255,0.6)",
+              textAlign: "right",
+            }}
+          >
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -32,12 +32,12 @@ CáiShén (財神) is the Chinese God of Wealth. Make an offering containing the
 
 | Outcome               | Chance | Payout                 |
 | --------------------- | ------ | ---------------------- |
-| 🥟 IOU Dumplings      | 50%    | Nothing                |
-| 🔄 Luck Recycled      | 24.9%  | 1x refund              |
-| 💰 Small Win          | 15%    | 1.5x                   |
-| 🐷 Golden Pig         | 8%     | 3x                     |
-| 🧧 JACKPOT            | 2%     | 8x (max 25% of pool)   |
-| 🎰 SUPER JACKPOT      | 0.1%   | 88x (max 50% of pool)  |
+| 🥟 IOU Dumplings      | ~50%   | Nothing                |
+| 🔄 Luck Recycled      | ~25%   | 1x refund              |
+| 💰 Small Win          | ~16%   | 1.5x                   |
+| 🐷 Golden Pig         | ~8%    | 3x                     |
+| 🧧 JACKPOT            | ~0.8%  | 8x (max 10% of pool)   |
+| 🎰 SUPER JACKPOT      | ~0.08% | 88x (max 50% of pool)  |
 
 ### ⚠️ Superstitions & Forbidden Times
 
@@ -345,6 +345,101 @@ if client.should_proceed("Is this a good time to trade?"):
 else:
     print("⏳ Wait for better fortune")
 ```
+
+---
+
+## 💰 Juice Feature (FORTUNE_TOKEN Extra Favor)
+
+Agents can "juice" CáiShén with FORTUNE_TOKEN (an ERC-20 token) to earn extra divine favor. This is API/agent-only — no web UI.
+
+When juice is present, CáiShén (the AI oracle) is told the seeker has shown extra devotion. The AI factors this into its tier decision — more juice means CáiShén is more likely to grant a higher fortune. **This is probabilistic, not guaranteed.** Even with maximum juice, a low tier is still possible — CáiShén is a god, not a vending machine.
+
+### How It Works
+
+1. The seeker sends FORTUNE_TOKEN to the oracle address
+2. The server verifies the token transfer and determines the juice tier
+3. CáiShén (AI) is informed of the juice level and factors it into the fortune decision
+4. The AI imagines rolling fortune multiple times and picking the best — higher juice = more imaginary rolls = better odds
+
+### Juice Tiers
+
+| FORTUNE_TOKEN Sent | Juice Level | Label        | Effect                                        |
+| ------------------ | ----------- | ------------ | --------------------------------------------- |
+| 100,000+           | 4           | Mega Juice   | Like rolling 5x and taking the best           |
+| 10,000+            | 3           | Large Juice  | Like rolling 4x and taking the best           |
+| 1,000+             | 2           | Medium Juice | Like rolling 3x and taking the best           |
+| 100+               | 1           | Small Juice  | Like rolling 2x and taking the best           |
+
+**Cap:** Juice can push up to tier 5 (JACKPOT) but **never** tier 6 (SUPER JACKPOT). SUPER JACKPOT is reserved for pure, unjuiced luck.
+
+### Two-Transaction Flow
+
+You **cannot** send native MON + ERC-20 token in one transaction. Agents must send **2 transactions, 1 API call**:
+
+1. **Send FORTUNE_TOKEN** to oracle address (juice tx)
+2. **Send MON** to oracle address (offering tx)
+3. **Call `POST /api/fortune`** with both tx hashes
+
+### Example (cast)
+
+```bash
+# Step 1: Send FORTUNE_TOKEN to oracle (juice)
+cast send $FORTUNE_TOKEN_ADDRESS \
+  "transfer(address,uint256)" \
+  0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f \
+  $(cast --to-wei 1000) \
+  --rpc-url https://testnet-rpc.monad.xyz \
+  --private-key $PRIVATE_KEY
+
+# Step 2: Send MON to oracle (offering)
+cast send 0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f \
+  --value 0.88ether \
+  --rpc-url https://testnet-rpc.monad.xyz \
+  --private-key $PRIVATE_KEY
+
+# Step 3: Call API with both tx hashes
+curl -X POST "http://localhost:3000/api/fortune?network=testnet" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "txHash": "0xOFFERING_TX_HASH",
+    "juiceTxHash": "0xJUICE_TX_HASH",
+    "message": "Bless me, CáiShén!"
+  }'
+```
+
+### Juice Response Fields
+
+When juice is included, the response contains a `juice` object:
+
+```json
+{
+  "success": true,
+  "caishen": {
+    "outcome": "🧧 JACKPOT",
+    "tier": 5,
+    "blessing": "Your devotion with 1000 FORTUNE_TOKEN has pleased CáiShén..."
+  },
+  "juice": {
+    "juice_tx_hash": "0x...",
+    "token_amount": "1000.0",
+    "rerolls": 2,
+    "juice_label": "Medium Juice",
+    "base_tier": 5,
+    "boosted_tier": 5
+  },
+  ...
+}
+```
+
+When no juice is provided, `"juice": null`.
+
+### Rules
+
+- Both transactions must come from the **same sender address**
+- The FORTUNE_TOKEN transfer must be sent **to the oracle address**
+- Each juice tx hash can only be used **once** (replay protection)
+- Juice is optional — existing flow works unchanged without it
+- The AI acknowledges juice in its blessing — juiced seekers get personalized responses
 
 ---
 

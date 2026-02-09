@@ -4,15 +4,20 @@ import {
   createWalletClient,
   http,
   formatEther,
+  formatUnits,
+  parseAbi,
+  parseEventLogs,
   type Hex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { NETWORKS, OUTCOMES, MIN_OFFERING, type NetworkName } from "@/lib/constants";
+import { NETWORKS, OUTCOMES, MIN_OFFERING, FORTUNE_TOKEN_ADDRESS, JUICE_MAX_TIER, type NetworkName } from "@/lib/constants";
 import {
   detectPenalties,
   calculatePayout,
   fallbackTierSelection,
   validateOffering,
+  calculateJuiceRerolls,
+  applyJuiceRerolls,
   isForbiddenDay,
   isGhostHour,
   isTuesday,
@@ -20,6 +25,10 @@ import {
 import { consultCaishen, getFallbackBlessing } from "@/lib/ai";
 import { getConvexClient } from "@/lib/convex";
 import { api } from "@/convex/_generated/api";
+
+const erc20TransferAbi = parseAbi([
+  "event Transfer(address indexed from, address indexed to, uint256 value)"
+]);
 
 function getClients(network: NetworkName) {
   const config = NETWORKS[network];
@@ -66,7 +75,7 @@ async function detectNetwork(txhash: Hex): Promise<NetworkName | null> {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { txHash, message } = body;
+    const { txHash, message, juiceTxHash } = body;
 
     if (!txHash || !message) {
       return NextResponse.json(
@@ -78,6 +87,13 @@ export async function POST(request: Request) {
     if (!/^0x[a-fA-F0-9]{64}$/.test(txHash)) {
       return NextResponse.json(
         { error: "Invalid txHash" },
+        { status: 400 },
+      );
+    }
+
+    if (juiceTxHash && !/^0x[a-fA-F0-9]{64}$/.test(juiceTxHash)) {
+      return NextResponse.json(
+        { error: "Invalid juiceTxHash" },
         { status: 400 },
       );
     }
@@ -125,6 +141,18 @@ export async function POST(request: Request) {
         { error: "Already processed" },
         { status: 400 },
       );
+    }
+
+    if (juiceTxHash) {
+      const juiceAlreadyProcessed = await convex.query(api.processedTxs.isProcessed, {
+        txHash: (juiceTxHash as string).toLowerCase(),
+      });
+      if (juiceAlreadyProcessed) {
+        return NextResponse.json(
+          { error: "Juice tx already processed" },
+          { status: 400 },
+        );
+      }
     }
 
     // Verify transaction on-chain
@@ -214,6 +242,71 @@ export async function POST(request: Request) {
     // Detect superstition penalties
     const { penalties, penaltyMultiplier } = detectPenalties(tx.value.toString());
 
+    // Juice verification
+    let juiceRerolls = 0;
+    let juiceLabel = "";
+    let juiceAmount = "0";
+
+    if (juiceTxHash) {
+      try {
+        const juiceHash = juiceTxHash as Hex;
+        const juiceReceipt = await publicClient.getTransactionReceipt({ hash: juiceHash });
+        const juiceTx = await publicClient.getTransaction({ hash: juiceHash });
+
+        if (!juiceReceipt || juiceReceipt.status !== "success") {
+          return NextResponse.json(
+            { error: "Juice transaction not found or failed" },
+            { status: 400 },
+          );
+        }
+
+        if (juiceTx.from.toLowerCase() !== tx.from.toLowerCase()) {
+          return NextResponse.json(
+            { error: "Juice tx sender must match offering tx sender" },
+            { status: 400 },
+          );
+        }
+
+        const oracleAddr = (walletClient?.account.address || config.oracleAddress).toLowerCase();
+        const tokenAddr = FORTUNE_TOKEN_ADDRESS[network]?.toLowerCase();
+
+        const transferLogs = parseEventLogs({
+          abi: erc20TransferAbi,
+          logs: juiceReceipt.logs,
+        });
+
+        const matchingTransfer = transferLogs.find(
+          (log) =>
+            log.address.toLowerCase() === tokenAddr &&
+            log.args.to.toLowerCase() === oracleAddr
+        );
+
+        if (!matchingTransfer) {
+          return NextResponse.json(
+            { error: "No FORTUNE_TOKEN transfer to oracle found in juice tx" },
+            { status: 400 },
+          );
+        }
+
+        const tokenAmountRaw = matchingTransfer.args.value;
+        juiceAmount = formatUnits(tokenAmountRaw, 18);
+
+        const result = calculateJuiceRerolls(tokenAmountRaw);
+        juiceRerolls = result.rerolls;
+        juiceLabel = result.label;
+
+        // Mark juice tx as processed
+        await convex.mutation(api.processedTxs.markProcessed, {
+          txHash: juiceHash.toLowerCase(),
+          network,
+        });
+      } catch (e) {
+        if (e instanceof Error && e.message.includes("already processed")) throw e;
+        console.error("Juice verification failed:", e);
+        // Non-fatal: proceed without juice rerolls
+      }
+    }
+
     // Fetch oracle wallet (pool) balance
     const oracleAddress = walletClient?.account.address || (config.oracleAddress as `0x${string}`);
     const poolBalance = await publicClient.getBalance({ address: oracleAddress });
@@ -229,17 +322,27 @@ export async function POST(request: Request) {
       penalties,
       penaltyMultiplier,
       poolBalance: formatEther(poolBalance),
+      juice: juiceRerolls > 0 ? { rerolls: juiceRerolls, label: juiceLabel, tokenAmount: juiceAmount } : null,
     });
 
+    let baseTier: number;
+
     if (aiResult) {
-      tier = aiResult.tier;
+      // AI already factors juice into its decision; cap at JUICE_MAX_TIER if juiced
+      baseTier = aiResult.tier;
+      tier = juiceRerolls > 0 ? Math.min(JUICE_MAX_TIER, aiResult.tier) : aiResult.tier;
       blessing = aiResult.blessing;
       oracleSource = "ai";
     } else {
       // Fallback to deterministic hash-based tier selection
-      tier = fallbackTierSelection(txhash, message, penaltyMultiplier);
+      baseTier = fallbackTierSelection(txhash, message, penaltyMultiplier);
+      tier = baseTier;
       blessing = getFallbackBlessing(tier);
       oracleSource = "fallback";
+      // Apply fallback juice rerolls
+      if (juiceRerolls > 0) {
+        tier = applyJuiceRerolls(tier, juiceRerolls, txhash, message, penaltyMultiplier);
+      }
     }
 
     // Calculate fixed payout based on tier
@@ -290,6 +393,9 @@ export async function POST(request: Request) {
         penaltyMultiplier,
         explorerUrl: `${config.explorer}/tx/${txhash}`,
         timestamp: Date.now(),
+        juiceTxHash: juiceTxHash || null,
+        juiceAmount: juiceRerolls > 0 ? juiceAmount : undefined,
+        juiceRerolls: juiceRerolls > 0 ? juiceRerolls : undefined,
       });
     } catch (e) {
       console.error("Failed to insert fortune history:", e);
@@ -320,6 +426,14 @@ export async function POST(request: Request) {
         is_ghost_hour: isGhostHour(),
         is_tuesday: isTuesday(),
       },
+      juice: juiceTxHash ? {
+        juice_tx_hash: juiceTxHash,
+        token_amount: juiceAmount,
+        rerolls: juiceRerolls,
+        juice_label: juiceLabel,
+        base_tier: baseTier,
+        boosted_tier: tier,
+      } : null,
       network,
       sender: tx.from,
       explorer_url: `${config.explorer}/tx/${txhash}`,

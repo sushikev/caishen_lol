@@ -90,14 +90,16 @@ npx convex dev & bun run dev
 
 ## Convex Schema Changes
 
-Whenever you modify files in `convex/` (schema, queries, mutations):
+**IMPORTANT:** Every time you modify files in `convex/` (schema, queries, mutations), you MUST sync and codegen before testing or the deployed schema will reject new/renamed fields.
 
-1. The `convex dev` watcher automatically re-deploys and regenerates `convex/_generated/`
-2. If you're not running `convex dev`, manually regenerate types:
+1. If `convex dev` watcher is running, it auto-deploys and regenerates `convex/_generated/`
+2. If you're NOT running `convex dev`, you MUST manually sync:
    ```bash
-   npx convex codegen
+   npx convex dev --once
    ```
+   This pushes schema + function changes to the deployment and regenerates types.
 3. The `convex/_generated/` directory contains auto-generated type-safe API bindings — **do not edit these files manually**
+4. **Never skip this step** — the API will return `ArgumentValidationError` if the deployed schema doesn't match the fields your code sends
 
 ## Convex Tables
 
@@ -130,6 +132,9 @@ Persistent fortune results — replaces the ephemeral React `useState` history.
 | `penaltyMultiplier` | number | Combined penalty multiplier |
 | `explorerUrl` | string | Block explorer URL |
 | `timestamp` | number | Unix timestamp |
+| `juiceTxHash` | string \| null (optional) | Juice FORTUNE_TOKEN tx hash |
+| `juiceAmount` | string (optional) | FORTUNE_TOKEN amount sent |
+| `juiceRerolls` | number (optional) | Juice reroll level (1-4) |
 
 ## Build
 

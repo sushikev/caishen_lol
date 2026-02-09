@@ -18,6 +18,9 @@ export const insertResult = mutation({
     penaltyMultiplier: v.number(),
     explorerUrl: v.string(),
     timestamp: v.number(),
+    juiceTxHash: v.optional(v.union(v.string(), v.null())),
+    juiceAmount: v.optional(v.string()),
+    juiceRerolls: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("fortuneHistory", {
