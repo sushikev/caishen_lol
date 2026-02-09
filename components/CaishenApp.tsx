@@ -5,6 +5,7 @@ import { useAccount, useBalance, useChainId, useSendTransaction, useWaitForTrans
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { parseEther } from "viem";
+import confetti from "canvas-confetti";
 import { OUTCOMES, PALETTE, SUGGESTED_AMOUNTS, HOUSE_WALLET_ADDRESS, ORACLE_ADDRESSES, MIN_OFFERING } from "@/lib/constants";
 import {
   hasEight,
@@ -263,6 +264,21 @@ export default function CaishenApp() {
 
     // Build footer with payout info
     const payoutFooter = r.payout > 0 ? `+${formatMON(r.payout)} MON returned` : undefined;
+
+    // Confetti for wins above 1x (tier 3+, outcome index 2+)
+    if (r.outcome >= 2) {
+      const tier = r.outcome + 1;
+      const intensity = tier <= 3 ? 0.4 : tier <= 4 ? 0.7 : 1;
+      const duration = tier >= 5 ? 3000 : 1500;
+      const end = Date.now() + duration;
+      const colors = tier >= 5 ? ["#FFD700", "#DC143C", "#FF6347"] : ["#FFD700", "#DAA520"];
+      const frame = () => {
+        confetti({ particleCount: Math.floor(5 * intensity), angle: 60, spread: 55, origin: { x: 0, y: 0.6 }, colors });
+        confetti({ particleCount: Math.floor(5 * intensity), angle: 120, spread: 55, origin: { x: 1, y: 0.6 }, colors });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      };
+      frame();
+    }
 
     // Use AI-generated blessing if available, otherwise fallback
     if (pendingBlessingRef.current) {
