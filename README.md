@@ -2,7 +2,7 @@
 
 **Red Envelope Roulette AI Agent on Monad Blockchain**
 
-> Consult the Chinese God of Wealth. Make an offering containing the digit "8" to receive CáiShén's blessing. The AI *is* the oracle — your wish quality matters! But beware the unlucky number 4 and forbidden times!
+> Consult the Chinese God of Wealth. Make an offering containing the digit "8" to receive CáiShén's blessing. The AI _is_ the oracle — your wish quality matters! But beware the unlucky number 4 and forbidden times!
 
 Built for **Moltiverse Hackathon** — Agent + Token Track.
 
@@ -53,23 +53,23 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Rules
 
-| Requirement          | Testnet        | Mainnet              |
-| -------------------- | -------------- | -------------------- |
-| **Minimum Offering** | 0.08 $MON      | 8 $MON               |
-| **Must Contain**     | Digit "8"      | Digit "8"            |
-| **Lucky Number**     | 八 (bā) — prosperity (發 fā) | |
-| **Unlucky Number**   | 四 (sì) — death (死 sǐ)      | |
+| Requirement          | Testnet                      | Mainnet   |
+| -------------------- | ---------------------------- | --------- |
+| **Minimum Offering** | 0.08 $MON                    | 8 $MON    |
+| **Must Contain**     | Digit "8"                    | Digit "8" |
+| **Lucky Number**     | 八 (bā) — prosperity (發 fā) |           |
+| **Unlucky Number**   | 四 (sì) — death (死 sǐ)      |           |
 
 ### Six Possible Outcomes
 
-| Outcome               | Chance | Payout                 |
-| --------------------- | ------ | ---------------------- |
-| 🥟 IOU Dumplings      | ~50%   | Nothing                |
-| 🔄 Luck Recycled      | ~25%   | 1x refund              |
-| 💰 Small Win          | ~16%   | 1.5x                   |
-| 🐷 Golden Pig         | ~8%    | 3x                     |
-| 🧧 JACKPOT            | ~0.8%  | 8x (max 10% of pool)   |
-| 🎰 SUPER JACKPOT      | ~0.08% | 88x (max 50% of pool)  |
+| Outcome          | Chance | Payout                |
+| ---------------- | ------ | --------------------- |
+| 🥟 IOU Dumplings | ~50%   | Nothing               |
+| 🔄 Luck Recycled | ~25%   | 1x refund             |
+| 💰 Small Win     | ~16%   | 1.5x                  |
+| 🐷 Golden Pig    | ~8%    | 3x                    |
+| 🧧 JACKPOT       | ~1%    | 8x (max 10% of pool)  |
+| 🎰 SUPER JACKPOT | ~0.1%  | 88x (max 50% of pool) |
 
 ### Superstitions (Penalties)
 
@@ -197,12 +197,12 @@ console.log(fortune.caishen.blessing); // AI-generated blessing
 
 ## Environment Variables
 
-| Variable                               | Required | Description                                   |
-| -------------------------------------- | -------- | --------------------------------------------- |
-| `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | Yes      | WalletConnect project ID                      |
-| `ORACLE_PRIVATE_KEY`                   | Yes      | Private key for oracle wallet (sends payouts) |
-| `TESTNET_ORACLE_ADDRESS`               | Yes      | Oracle address on testnet                     |
-| `MAINNET_ORACLE_ADDRESS`               | No       | Oracle address on mainnet                     |
+| Variable                               | Required | Description                                                           |
+| -------------------------------------- | -------- | --------------------------------------------------------------------- |
+| `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | Yes      | WalletConnect project ID                                              |
+| `ORACLE_PRIVATE_KEY`                   | Yes      | Private key for oracle wallet (sends payouts)                         |
+| `TESTNET_ORACLE_ADDRESS`               | Yes      | Oracle address on testnet                                             |
+| `MAINNET_ORACLE_ADDRESS`               | No       | Oracle address on mainnet                                             |
 | `MOONSHOT_API_KEY`                     | No       | Kimi API key from Moonshot AI (falls back to deterministic if absent) |
 
 ---

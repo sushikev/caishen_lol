@@ -30,14 +30,16 @@ CáiShén (財神) is the Chinese God of Wealth. Make an offering containing the
 
 ### 🎲 Outcomes
 
-| Outcome               | Chance | Payout                 |
-| --------------------- | ------ | ---------------------- |
-| 🥟 IOU Dumplings      | ~50%   | Nothing                |
-| 🔄 Luck Recycled      | ~25%   | 1x refund              |
-| 💰 Small Win          | ~16%   | 1.5x                   |
-| 🐷 Golden Pig         | ~8%    | 3x                     |
-| 🧧 JACKPOT            | ~0.8%  | 8x (max 10% of pool)   |
-| 🎰 SUPER JACKPOT      | ~0.08% | 88x (max 50% of pool)  |
+CáiShén AI considers your **message** and **offering amount** when deciding your fortune. A heartfelt wish and a generous offering may sway the God of Wealth in your favor — but nothing is guaranteed.
+
+| Outcome               | Rarity     | Payout                 |
+| --------------------- | ---------- | ---------------------- |
+| 🥟 IOU Dumplings      | Common     | Nothing                |
+| 🔄 Luck Recycled      | Uncommon   | 1x refund              |
+| 💰 Small Win          | Rare       | 1.5x                   |
+| 🐷 Golden Pig         | Very Rare  | 3x                     |
+| 🧧 JACKPOT            | Legendary  | 8x (max 10% of pool)   |
+| 🎰 SUPER JACKPOT      | Mythical   | 88x (max 50% of pool)  |
 
 ### ⚠️ Superstitions & Forbidden Times
 
@@ -54,13 +56,14 @@ CáiShén (財神) is the Chinese God of Wealth. Make an offering containing the
 
 ## 📋 Quick Reference
 
-| Item                | Testnet                                      | Mainnet                   |
-| ------------------- | -------------------------------------------- | ------------------------- |
-| **CáiShén Address** | `0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f` | _Coming soon_             |
-| **RPC**             | `https://testnet-rpc.monad.xyz`              | `https://rpc.monad.xyz`   |
-| **Min Offering**    | 0.08 MON                                     | 8 MON                     |
-| **Must Include**    | Digit "8"                                    | Digit "8"                 |
-| **Explorer**        | https://testnet.monadexplorer.com            | https://monadexplorer.com |
+| Item                  | Testnet                                      | Mainnet                                        |
+| --------------------- | -------------------------------------------- | ---------------------------------------------- |
+| **CáiShén Address**   | `0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f` | _Coming soon_                                  |
+| **FORTUNE_TOKEN**     | _Coming soon_                                | `0xdd359f6149259bee4224ecb5d3646e7631b61756`   |
+| **RPC**               | `https://testnet-rpc.monad.xyz`              | `https://rpc.monad.xyz`                        |
+| **Min Offering**      | 0.08 MON                                     | 8 MON                                          |
+| **Must Include**      | Digit "8"                                    | Digit "8"                                      |
+| **Explorer**          | https://testnet.monadexplorer.com            | https://monadexplorer.com                      |
 
 ---
 
@@ -384,7 +387,7 @@ You **cannot** send native MON + ERC-20 token in one transaction. Agents must se
 
 ```bash
 # Step 1: Send FORTUNE_TOKEN to oracle (juice)
-cast send $FORTUNE_TOKEN_ADDRESS \
+cast send 0xdd359f6149259bee4224ecb5d3646e7631b61756 \
   "transfer(address,uint256)" \
   0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f \
   $(cast --to-wei 1000) \
