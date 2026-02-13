@@ -8,12 +8,12 @@ export const OUTCOMES = [
 ] as const;
 
 export const MIN_OFFERING: Record<string, number> = {
-  testnet: 0.08,
+  testnet: 8,
   mainnet: 8,
 };
 
 export const SUGGESTED_AMOUNTS: Record<string, readonly number[]> = {
-  testnet: [0.08, 0.18, 0.28, 0.88, 1.88, 8.88],
+  testnet: [8, 18, 28, 88, 188, 888],
   mainnet: [8, 18, 28, 88, 188, 888],
 };
 

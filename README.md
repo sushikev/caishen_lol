@@ -55,7 +55,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Requirement          | Testnet                      | Mainnet   |
 | -------------------- | ---------------------------- | --------- |
-| **Minimum Offering** | 0.08 $MON                    | 8 $MON    |
+| **Minimum Offering** | 8 $MON                       | 8 $MON    |
 | **Must Contain**     | Digit "8"                    | Digit "8" |
 | **Lucky Number**     | 八 (bā) — prosperity (發 fā) |           |
 | **Unlucky Number**   | 四 (sì) — death (死 sǐ)      |           |

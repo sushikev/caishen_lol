@@ -21,34 +21,34 @@ CáiShén (財神) is the Chinese God of Wealth. Make an offering containing the
 
 ### Requirements
 
-| Rule                 | Testnet        | Mainnet                          |
-| -------------------- | -------------- | -------------------------------- |
-| **Minimum Offering** | 0.08 $MON      | 8 $MON                           |
-| **Must Contain**     | Digit "8"      | Digit "8"                        |
-| **Lucky Number**     | 八 (bā) - sounds like 發 (fā) prosperity | |
-| **Unlucky Number**   | 四 (sì) - sounds like 死 (sǐ) death      | |
+| Rule                 | Details                                  |
+| -------------------- | ---------------------------------------- |
+| **Minimum Offering** | 8 $MON                                   |
+| **Must Contain**     | Digit "8"                                |
+| **Lucky Number**     | 八 (bā) - sounds like 發 (fā) prosperity |
+| **Unlucky Number**   | 四 (sì) - sounds like 死 (sǐ) death      |
 
 ### 🎲 Outcomes
 
 CáiShén AI considers your **message** and **offering amount** when deciding your fortune. A heartfelt wish and a generous offering may sway the God of Wealth in your favor — but nothing is guaranteed.
 
-| Outcome               | Rarity     | Payout                 |
-| --------------------- | ---------- | ---------------------- |
-| 🥟 IOU Dumplings      | Common     | Nothing                |
-| 🔄 Luck Recycled      | Uncommon   | 1x refund              |
-| 💰 Small Win          | Rare       | 1.5x                   |
-| 🐷 Golden Pig         | Very Rare  | 3x                     |
-| 🧧 JACKPOT            | Legendary  | 8x (max 10% of pool)   |
-| 🎰 SUPER JACKPOT      | Mythical   | 88x (max 50% of pool)  |
+| Outcome          | Rarity    | Payout                |
+| ---------------- | --------- | --------------------- |
+| 🥟 IOU Dumplings | Common    | Nothing               |
+| 🔄 Luck Recycled | Uncommon  | 1x refund             |
+| 💰 Small Win     | Rare      | 1.5x                  |
+| 🐷 Golden Pig    | Very Rare | 3x                    |
+| 🧧 JACKPOT       | Legendary | 8x (max 10% of pool)  |
+| 🎰 SUPER JACKPOT | Mythical  | 88x (max 50% of pool) |
 
 ### ⚠️ Superstitions & Forbidden Times
 
-| Penalty           | Condition                | Effect                    |
-| ----------------- | ------------------------ | ------------------------- |
-| 💀 Death Numbers  | Multiple 4s in amount    | CáiShén's mood darkens    |
-| 📅 Forbidden Days | 4th, 14th, 24th of month | CáiShén's mood darkens    |
-| 👻 Ghost Hour     | 4:44 AM/PM               | CáiShén's mood darkens    |
-| 📆 Tuesday        | Any Tuesday              | CáiShén's mood darkens    |
+| Penalty           | Condition                | Effect                 |
+| ----------------- | ------------------------ | ---------------------- |
+| 💀 Death Numbers  | Multiple 4s in amount    | CáiShén's mood darkens |
+| 📅 Forbidden Days | 4th, 14th, 24th of month | CáiShén's mood darkens |
+| 👻 Ghost Hour     | 4:44 AM/PM               | CáiShén's mood darkens |
+| 📆 Tuesday        | Any Tuesday              | CáiShén's mood darkens |
 
 **Penalties stack!** Multiple penalties push CáiShén toward lower tiers.
 
@@ -56,53 +56,36 @@ CáiShén AI considers your **message** and **offering amount** when deciding yo
 
 ## 📋 Quick Reference
 
-| Item                  | Testnet                                      | Mainnet                                        |
-| --------------------- | -------------------------------------------- | ---------------------------------------------- |
-| **CáiShén Address**   | `0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f` | _Coming soon_                                  |
-| **FORTUNE_TOKEN**     | _Coming soon_                                | `0xdd359f6149259bee4224ecb5d3646e7631b61756`   |
-| **RPC**               | `https://testnet-rpc.monad.xyz`              | `https://rpc.monad.xyz`                        |
-| **Min Offering**      | 0.08 MON                                     | 8 MON                                          |
-| **Must Include**      | Digit "8"                                    | Digit "8"                                      |
-| **Explorer**          | https://testnet.monadexplorer.com            | https://monadexplorer.com                      |
+| Item                | Details                                      |
+| ------------------- | -------------------------------------------- |
+| **CáiShén Address** | `0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f` |
+| **FORTUNE_TOKEN**   | `0xdd359f6149259bee4224ecb5d3646e7631b61756` |
+| **RPC**             | `https://rpc.monad.xyz`                      |
+| **Min Offering**    | 8 MON                                        |
+| **Must Include**    | Digit "8"                                    |
+| **Explorer**        | https://monadexplorer.com                    |
 
 ---
 
 ## 🚀 Quick Start
 
-### Step 1: Get Testnet MON
+### Step 1: Make Offering to CáiShén
 
 ```bash
-curl -X POST https://agents.devnads.com/v1/faucet \
-  -H "Content-Type: application/json" \
-  -d '{"address": "YOUR_WALLET_ADDRESS", "chainId": 10143}'
-```
-
-### Step 2: Make Offering to CáiShén
-
-```bash
-# Testnet offering of 0.88 MON (lucky!)
 cast send 0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f \
-  --value 0.88ether \
-  --rpc-url https://testnet-rpc.monad.xyz \
+  --value 88ether \
+  --rpc-url https://rpc.monad.xyz \
   --private-key $PRIVATE_KEY
 ```
 
-**Lucky amounts (testnet):** 0.08, 0.18, 0.28, 0.88, 1.88, 8.88...
-
-**Lucky amounts (mainnet):** 8, 18, 28, 88, 188, 888...
+**Lucky amounts:** 8, 18, 28, 88, 188, 888...
 
 **Avoid:** 4, 4.4, 14, 24, 40, 44, 444... (death numbers)
 
-### Step 3: Receive Fortune
+### Step 2: Receive Fortune
 
 ```bash
-# Testnet
-curl -X POST "http://localhost:3000/fortune?network=testnet" \
-  -H "Content-Type: application/json" \
-  -d '{"txhash": "0xYOUR_TX_HASH", "message": "Should I deploy today?"}'
-
-# Mainnet (default if no network specified)
-curl -X POST "http://localhost:3000/fortune" \
+curl -X POST "https://caishen.lol/api/fortune" \
   -H "Content-Type: application/json" \
   -d '{"txhash": "0xYOUR_TX_HASH", "message": "Should I deploy today?"}'
 ```
@@ -111,13 +94,9 @@ curl -X POST "http://localhost:3000/fortune" \
 
 ## 📡 API Reference
 
-### POST `/fortune?network={testnet|mainnet}`
+### POST `/api/fortune`
 
 Consult CáiShén for your fortune.
-
-**Query Parameters:**
-
-- `network` - `testnet` or `mainnet`. **Defaults to mainnet** if not specified.
 
 **Request:**
 
@@ -155,9 +134,8 @@ Consult CáiShén for your fortune.
     "is_ghost_hour": false,
     "is_tuesday": true
   },
-  "network": "testnet",
   "sender": "0x...",
-  "explorer_url": "https://testnet.monadexplorer.com/tx/0xabc...",
+  "explorer_url": "https://monadexplorer.com/tx/0xabc...",
   "timestamp": "2026-02-08T07:00:00Z"
 }
 ```
@@ -195,10 +173,9 @@ const { ethers } = require("ethers");
 
 const CONFIG = {
   caishenAddress: "0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f",
-  rpcUrl: "https://testnet-rpc.monad.xyz",
-  apiUrl: "http://localhost:3000",
+  rpcUrl: "https://rpc.monad.xyz",
+  apiUrl: "https://caishen.lol",
   privateKey: process.env.AGENT_PRIVATE_KEY,
-  network: "testnet", // or 'mainnet'
 };
 
 function getLuckyAmount() {
@@ -226,17 +203,14 @@ async function consultCaishen() {
   console.log("💸 Offering sent:", receipt.hash);
 
   // Consult CáiShén
-  const response = await fetch(
-    `${CONFIG.apiUrl}/fortune?network=${CONFIG.network}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        txhash: receipt.hash,
-        message: "What fortune awaits me today?",
-      }),
-    },
-  );
+  const response = await fetch(`${CONFIG.apiUrl}/api/fortune`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      txhash: receipt.hash,
+      message: "What fortune awaits me today?",
+    }),
+  });
 
   const result = await response.json();
 
@@ -266,20 +240,12 @@ import random
 import os
 
 class CaishenOracle:
-    def __init__(self, private_key, network="testnet"):
+    def __init__(self, private_key):
         self.private_key = private_key
-        self.network = network
-
-        if network == "testnet":
-            self.rpc_url = "https://testnet-rpc.monad.xyz"
-            self.caishen_address = "0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f"
-            self.api_url = "http://localhost:3000"
-            self.chain_id = 10143
-        else:
-            self.rpc_url = "https://rpc.monad.xyz"
-            self.caishen_address = ""  # Set when deployed
-            self.api_url = "http://localhost:3000"
-            self.chain_id = 10144
+        self.rpc_url = "https://rpc.monad.xyz"
+        self.caishen_address = "0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f"
+        self.api_url = "https://caishen.lol"
+        self.chain_id = 143
 
         self.w3 = Web3(Web3.HTTPProvider(self.rpc_url))
         self.account = self.w3.eth.account.from_key(private_key)
@@ -315,7 +281,7 @@ class CaishenOracle:
 
         # Consult CáiShén
         response = requests.post(
-            f"{self.api_url}/fortune?network={self.network}",
+            f"{self.api_url}/api/fortune",
             json={
                 "txhash": receipt.transactionHash.hex(),
                 "message": question
@@ -337,7 +303,7 @@ class CaishenOracle:
         return result['caishen']['tier'] >= 3
 
 # Usage
-client = CaishenOracle(os.getenv("PRIVATE_KEY"), "testnet")
+client = CaishenOracle(os.getenv("PRIVATE_KEY"))
 
 # Consult
 fortune = client.consult("Should I deploy today?")
@@ -366,12 +332,12 @@ When juice is present, CáiShén (the AI oracle) is told the seeker has shown ex
 
 ### Juice Tiers
 
-| FORTUNE_TOKEN Sent | Juice Level | Label        | Effect                                        |
-| ------------------ | ----------- | ------------ | --------------------------------------------- |
-| 100,000+           | 4           | Mega Juice   | Like rolling 5x and taking the best           |
-| 10,000+            | 3           | Large Juice  | Like rolling 4x and taking the best           |
-| 1,000+             | 2           | Medium Juice | Like rolling 3x and taking the best           |
-| 100+               | 1           | Small Juice  | Like rolling 2x and taking the best           |
+| FORTUNE_TOKEN Sent | Juice Level | Label        | Effect                              |
+| ------------------ | ----------- | ------------ | ----------------------------------- |
+| 100,000+           | 4           | Mega Juice   | Like rolling 5x and taking the best |
+| 10,000+            | 3           | Large Juice  | Like rolling 4x and taking the best |
+| 1,000+             | 2           | Medium Juice | Like rolling 3x and taking the best |
+| 100+               | 1           | Small Juice  | Like rolling 2x and taking the best |
 
 **Cap:** Juice can push up to tier 5 (JACKPOT) but **never** tier 6 (SUPER JACKPOT). SUPER JACKPOT is reserved for pure, unjuiced luck.
 
@@ -391,17 +357,17 @@ cast send 0xdd359f6149259bee4224ecb5d3646e7631b61756 \
   "transfer(address,uint256)" \
   0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f \
   $(cast --to-wei 1000) \
-  --rpc-url https://testnet-rpc.monad.xyz \
+  --rpc-url https://rpc.monad.xyz \
   --private-key $PRIVATE_KEY
 
 # Step 2: Send MON to oracle (offering)
 cast send 0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f \
-  --value 0.88ether \
-  --rpc-url https://testnet-rpc.monad.xyz \
+  --value 88ether \
+  --rpc-url https://rpc.monad.xyz \
   --private-key $PRIVATE_KEY
 
 # Step 3: Call API with both tx hashes
-curl -X POST "http://localhost:3000/api/fortune?network=testnet" \
+curl -X POST "https://caishen.lol/api/fortune" \
   -H "Content-Type: application/json" \
   -d '{
     "txHash": "0xOFFERING_TX_HASH",
@@ -460,21 +426,20 @@ When no juice is provided, `"juice": null`.
 
 ## 🔧 Setup
 
-1. Get testnet MON from faucet
-2. Set environment variables in `.env`:
+1. Set environment variables in `.env`:
    ```
    ORACLE_PRIVATE_KEY=0x...
-   TESTNET_ORACLE_ADDRESS=0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f
+   ORACLE_ADDRESS=0x3b77d476a15C77A776e542ac4C0f6484DAa6Aa3f
    ```
-3. Start server: `npm start`
-4. Make offering and consult CáiShén!
+2. Start server: `npm start`
+3. Make offering and consult CáiShén!
 
 ---
 
 ## 📞 Links
 
 - **GitHub:** https://github.com/clawcybot/mon-fortune
-- **Monad Testnet:** https://testnet.monadexplorer.com
+- **Monad Explorer:** https://monadexplorer.com
 - **Chinese Culture:** https://en.wikipedia.org/wiki/Caishen
 
 ---
