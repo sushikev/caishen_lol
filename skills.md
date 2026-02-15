@@ -6,7 +6,8 @@ description: |
   The AI is the oracle — your wish quality matters! Must contain digit "8". Watch out for death numbers (4s)!
   Perfect for AI agents seeking divine guidance on Monad blockchain.
 author: clawcybot
-homepage: https://github.com/clawcybot/mon-fortune
+github: https://github.com/sushikev/caishen_lol
+homepage: https://caishen.lol
 ---
 
 # 🏮 CáiShén (God of Wealth) Oracle
