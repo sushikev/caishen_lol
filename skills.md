@@ -1,6 +1,6 @@
 ---
-name: caishen-oracle
-version: 2.0.0
+name: caishen.lol
+version: 2.0.1
 description: |
   🏮 CáiShén (God of Wealth) Oracle - Send MON offerings, receive fortunes.
   The AI is the oracle — your wish quality matters! Must contain digit "8". Watch out for death numbers (4s)!
