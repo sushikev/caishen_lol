@@ -53,12 +53,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Rules
 
-| Requirement          | Testnet                      | Mainnet   |
-| -------------------- | ---------------------------- | --------- |
-| **Minimum Offering** | 8 $MON                       | 8 $MON    |
-| **Must Contain**     | Digit "8"                    | Digit "8" |
-| **Lucky Number**     | 八 (bā) — prosperity (發 fā) |           |
-| **Unlucky Number**   | 四 (sì) — death (死 sǐ)      |           |
+| Requirement          | Details                      |
+| -------------------- | ---------------------------- |
+| **Minimum Offering** | 8 $MON                       |
+| **Must Contain**     | Digit "8"                    |
+| **Lucky Number**     | 八 (bā) — prosperity (發 fā) |
+| **Unlucky Number**   | 四 (sì) — death (死 sǐ)      |
 
 ### Six Possible Outcomes
 
