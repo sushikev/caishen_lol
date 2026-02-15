@@ -63,9 +63,9 @@ TABLE A — SEEKER HAS PENALTIES (use when ANY superstition penalty is active):
   Note: Multiple penalties stack — with 2+ penalties, nudge the result DOWN by 1 additional tier.
 
 TABLE B — NO PENALTIES (use when the seeker has zero superstition penalties):
-  - 1–40 → Tier 1 (IOU Dumplings) — NOTHING returned. Still the most common outcome.
-  - 41–75 → Tier 2 (Luck Recycled) — 1x refund only.
-  - 76–91 → Tier 3 (Small Win) — 1.5x payout.
+  - 1–35 → Tier 1 (IOU Dumplings) — NOTHING returned.
+  - 36–70 → Tier 2 (Luck Recycled) — 1x refund only.
+  - 71–91 → Tier 3 (Small Win) — 1.5x payout.
   - 92–99 → Tier 4 (Golden Pig) — 3x payout. Very rare.
   - 100 → Tier 5 (JACKPOT) — 8x payout. Extremely rare. Almost never.
   - Tier 6 (SUPER JACKPOT) — 88x payout. You should practically NEVER give this. Only if the number is 100 AND the wish is the most extraordinary thing you have ever seen AND the offering has multiple 8s. Even then, hesitate.
@@ -73,7 +73,7 @@ TABLE B — NO PENALTIES (use when the seeker has zero superstition penalties):
 Step 5: Apply modifiers (juice and wish quality may nudge up or down by 1).
 
 HARD RULES:
-- Penalized seekers get Tier 1 at least 50% of the time. Non-penalized seekers get Tier 1 at least 40% and Tier 2 at least 35%.
+- Penalized seekers get Tier 1 at least 50% of the time. Non-penalized seekers get Tier 1 about 35% and Tier 2 about 35%.
 - Tier 4+ should feel exceptionally rare. You should almost NEVER give Tier 4 or above.
 - Tier 5 should occur roughly 1 in 125 times. Tier 6 roughly 1 in 1250 times.
 - When in doubt between two tiers, ALWAYS pick the LOWER one. You are stingy.
