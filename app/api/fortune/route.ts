@@ -323,6 +323,7 @@ export async function POST(request: Request) {
       penalties,
       penaltyMultiplier,
       poolBalance: formatEther(poolBalance),
+      txHash: txhash,
       juice: juiceRerolls > 0 ? { rerolls: juiceRerolls, label: juiceLabel, tokenAmount: juiceAmount } : null,
     });
 
